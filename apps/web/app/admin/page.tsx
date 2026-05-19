@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { API_URL, GOOGLE_CALENDAR_ID, GOOGLE_CALENDAR_TIMEZONE } from "@/lib/config";
 import { BookingDialog } from "@/components/booking-dialog";
 
@@ -159,11 +159,6 @@ export default function AdminPage() {
     if (stored) setToken(stored);
   }, []);
 
-  useEffect(() => {
-    if (!token) return;
-    loadBookings();
-  }, [token]);
-
   function logout(reason?: string) {
     localStorage.removeItem("admin_token");
     setToken("");
@@ -191,7 +186,7 @@ export default function AdminPage() {
     setMessage("Login effettuato");
   }
 
-  async function loadBookings() {
+  const loadBookings = useCallback(async () => {
     if (!token) return;
     const res = await fetch(`${API_URL}/admin/bookings?from=${ADMIN_FROM}&to=${ADMIN_TO}`, {
       headers: { Authorization: `Bearer ${token}` },
@@ -208,7 +203,12 @@ export default function AdminPage() {
     }
     setBookings(data.items ?? []);
     setSelectedIds(new Set());
-  }
+  }, [token]);
+
+  useEffect(() => {
+    if (!token) return;
+    void loadBookings();
+  }, [loadBookings, token]);
 
   async function loadPricing() {
     if (!token) return;
@@ -1033,7 +1033,7 @@ export default function AdminPage() {
                     ) : null}
 
                     {customServices.length === 0 && !showNewServiceForm ? (
-                      <p className="text-sm text-muted">Nessun servizio aggiuntivo. Clicca "+ Aggiungi servizio" per crearne uno.</p>
+                      <p className="text-sm text-muted">Nessun servizio aggiuntivo. Clicca &quot;+ Aggiungi servizio&quot; per crearne uno.</p>
                     ) : null}
 
                     <div className="grid gap-3">

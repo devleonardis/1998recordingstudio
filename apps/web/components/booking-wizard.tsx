@@ -26,6 +26,10 @@ interface BookingWizardProps {
   compact?: boolean;
 }
 
+type ServicePricingWithActive = PricingData["services"][ServiceCode] & {
+  active?: boolean;
+};
+
 function normalizeApiError(detail: unknown): string {
   if (typeof detail === "string" && detail.trim().length > 0) return detail;
 
@@ -94,13 +98,17 @@ export function BookingWizard({ onClose, compact = false }: BookingWizardProps) 
 
   // Servizi attivi secondo il listino admin
   const services = useMemo<ServiceCode[]>(
-    () => ALL_SERVICE_CODES.filter((code) => (livePricing.services[code] as any)?.active !== false),
-    [livePricing]
+    () =>
+      ALL_SERVICE_CODES.filter((code) => {
+        const config = livePricing.services[code] as ServicePricingWithActive | undefined;
+        return config?.active !== false;
+      }),
+    [livePricing.services]
   );
 
   const packageItems = useMemo<BookingItemPayload[]>(() => {
     return selected.map((service) => ({ service, hours: livePricing.services[service].type === "hourly" ? hourMap[service] : 1 }));
-  }, [selected, hourMap]);
+  }, [hourMap, livePricing.services, selected]);
 
   const studioHours = useMemo(() => {
     const total = packageItems.reduce((sum, item) => {
@@ -117,7 +125,7 @@ export function BookingWizard({ onClose, compact = false }: BookingWizardProps) 
       const cfg = livePricing.services[item.service];
       return sum + (cfg.type === "hourly" ? cfg.price * item.hours : cfg.price);
     }, 0);
-  }, [packageItems]);
+  }, [livePricing.services, packageItems]);
   const hasService = selected.length > 0;
   const hasSlot = slot.trim().length > 0;
   const hasArtist = form.artist_name.trim().length > 0;
