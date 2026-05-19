@@ -112,8 +112,8 @@ export default function HomePage() {
             transition={{ duration: 0.8, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
             className="surface rounded-[1.75rem] border-white/12 p-6"
           >
-            <p className="text-xs uppercase tracking-[0.22em] text-muted">Per chi e pensato</p>
-            <h2 className="mt-3 font-[var(--font-space)] text-2xl text-white">Una home piu chiara, una sessione piu facile da prenotare.</h2>
+            <p className="text-xs uppercase tracking-[0.22em] text-muted">A chi è rivolto</p>
+            <h2 className="mt-3 font-[var(--font-space)] text-2xl text-white">Per artisti, vocalist, producer e team che vogliono lavorare bene.</h2>
             <div className="mt-5 space-y-4">
               <div className="rounded-2xl border border-white/10 bg-black/10 p-4">
                 <p className="text-sm font-medium text-white">Artisti e vocalist</p>
@@ -167,8 +167,7 @@ export default function HomePage() {
           <div className="grid gap-4">
             {certifications.map((item) => (
               <article key={item.embedSrc} className={`rounded-3xl border p-6 ${tierStyles[item.tier].card}`}>
-                <p className="text-[11px] uppercase tracking-[0.2em] text-white/60">Certificazione</p>
-                <h3 className={`mt-2 font-[var(--font-space)] text-2xl ${tierStyles[item.tier].title}`}>
+                <h3 className={`font-[var(--font-space)] text-2xl ${tierStyles[item.tier].title}`}>
                   {item.title}
                 </h3>
                 <p className="mt-3 text-sm leading-6 text-white/70">{item.detail}</p>

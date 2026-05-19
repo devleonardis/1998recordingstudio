@@ -109,6 +109,41 @@ def list_busy_intervals_for_date(target_date: date) -> list[tuple[datetime, date
     return intervals
 
 
+def list_events_in_range(from_date: date, to_date: date) -> list[dict]:
+    """Restituisce tutti gli eventi del calendario in un intervallo di date."""
+    if not is_enabled():
+        return []
+
+    service = _calendar_service()
+    tz = _tz()
+    time_min = datetime.combine(from_date, __import__("datetime").time.min, tzinfo=tz).isoformat()
+    time_max = datetime.combine(to_date + timedelta(days=1), __import__("datetime").time.min, tzinfo=tz).isoformat()
+
+    results: list[dict] = []
+    page_token = None
+    while True:
+        try:
+            kwargs: dict = dict(
+                calendarId=settings.GOOGLE_CALENDAR_ID,
+                timeMin=time_min,
+                timeMax=time_max,
+                singleEvents=True,
+                orderBy="startTime",
+                maxResults=250,
+            )
+            if page_token:
+                kwargs["pageToken"] = page_token
+            resp = service.events().list(**kwargs).execute()
+        except HttpError as exc:
+            logger.warning("Failed to fetch calendar events range: %s", exc)
+            break
+        results.extend(resp.get("items", []))
+        page_token = resp.get("nextPageToken")
+        if not page_token:
+            break
+    return results
+
+
 def create_event_for_booking(
     booking: Booking,
     items: list[BookingItem] | None,

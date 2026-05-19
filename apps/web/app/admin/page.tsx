@@ -42,7 +42,29 @@ const ADMIN_FROM = "2020-01-01";
 const ADMIN_TO = "2100-12-31";
 
 type SortMode = "datetime_desc" | "datetime_asc" | "customer_asc" | "customer_desc" | "price_desc" | "price_asc";
-type AdminView = "home" | "calendar" | "bookings" | "tools";
+type AdminView = "home" | "calendar" | "bookings" | "tools" | "listino" | "agenda";
+
+interface CustomService {
+  code: string;
+  label: string;
+  service_type: "fixed" | "hourly";
+  price: number;
+  currency: string;
+  description: string;
+  active: boolean;
+  sort_order: number;
+}
+
+interface PricingService {
+  code: string;
+  label: string;
+  type: string;
+  price: number;
+  base_price: number;
+  currency: string;
+  description: string;
+  active: boolean;
+}
 
 function bookingSearchText(booking: AdminBooking): string {
   const services = booking.package_items?.map((item) => `${item.service} ${item.hours}`).join(" ") || booking.service;
@@ -97,6 +119,18 @@ export default function AdminPage() {
   const [showManaged, setShowManaged] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [bulkLoading, setBulkLoading] = useState(false);
+  const [pricingServices, setPricingServices] = useState<PricingService[]>([]);
+  const [pricingEdits, setPricingEdits] = useState<Record<string, string>>({});
+  const [pricingLoading, setPricingLoading] = useState(false);
+  const [pricingMessage, setPricingMessage] = useState("");
+  const [customServices, setCustomServices] = useState<CustomService[]>([]);
+  const [newService, setNewService] = useState({ code: "", label: "", service_type: "fixed" as "fixed" | "hourly", price: "", description: "" });
+  const [showNewServiceForm, setShowNewServiceForm] = useState(false);
+  const [upcomingSessions, setUpcomingSessions] = useState<AdminBooking[]>([]);
+  const [agendaLoading, setAgendaLoading] = useState(false);
+  const [syncMessage, setSyncMessage] = useState("");
+  const [confirmingId, setConfirmingId] = useState<string | null>(null);
+  const [engineerChoice, setEngineerChoice] = useState<"NARDI" | "SVG" | "">( "NARDI");
   const [openBooking, setOpenBooking] = useState(false);
   const [activeView, setActiveView] = useState<AdminView>("home");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -176,14 +210,175 @@ export default function AdminPage() {
     setSelectedIds(new Set());
   }
 
-  async function patchStatus(id: string, status: Status, silent = false): Promise<boolean> {
+  async function loadPricing() {
+    if (!token) return;
+    setPricingLoading(true);
+    const res = await fetch(`${API_URL}/admin/pricing`, {
+      headers: { Authorization: `Bearer ${token}` },
+      cache: "no-store",
+    });
+    if (res.ok) {
+      const data = await res.json();
+      setPricingServices(data.services ?? []);
+      const edits: Record<string, string> = {};
+      for (const s of data.services ?? []) {
+        edits[s.code] = String(s.price);
+      }
+      setPricingEdits(edits);
+    }
+    setPricingLoading(false);
+  }
+
+  async function savePricing(code: string) {
+    setPricingMessage("");
+    const newPrice = parseInt(pricingEdits[code] ?? "", 10);
+    if (isNaN(newPrice) || newPrice < 0) {
+      setPricingMessage("Prezzo non valido.");
+      return;
+    }
+    const res = await fetch(`${API_URL}/admin/pricing/${code}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ price: newPrice }),
+    });
+    if (res.ok) {
+      setPricingMessage("Prezzo aggiornato.");
+      await loadPricing();
+    } else {
+      setPricingMessage("Errore aggiornamento prezzo.");
+    }
+  }
+
+  async function toggleActive(code: string, active: boolean) {
+    setPricingMessage("");
+    const res = await fetch(`${API_URL}/admin/pricing/${code}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ active }),
+    });
+    if (res.ok) {
+      setPricingMessage(active ? "Servizio attivato." : "Servizio disattivato.");
+      await loadPricing();
+    } else {
+      setPricingMessage("Errore aggiornamento stato.");
+    }
+  }
+
+  async function resetPricing(code: string) {
+    setPricingMessage("");
+    const res = await fetch(`${API_URL}/admin/pricing/${code}/reset`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (res.ok || res.status === 204) {
+      setPricingMessage("Prezzo ripristinato al default.");
+      await loadPricing();
+    }
+  }
+
+  async function loadUpcoming() {
+    if (!token) return;
+    setAgendaLoading(true);
+    const res = await fetch(`${API_URL}/admin/bookings/upcoming?limit=50`, {
+      headers: { Authorization: `Bearer ${token}` },
+      cache: "no-store",
+    });
+    if (res.ok) {
+      const data = await res.json();
+      setUpcomingSessions(data.items ?? []);
+    }
+    setAgendaLoading(false);
+  }
+
+  async function syncCalendar(silent = false) {
+    if (!token) return;
+    if (!silent) setAgendaLoading(true);
+    setSyncMessage("");
+    const res = await fetch(`${API_URL}/admin/calendar/sync`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data.imported > 0) {
+        setSyncMessage(`${data.imported} nuova${data.imported > 1 ? "e sessioni importate" : " sessione importata"} dal calendario.`);
+      } else if (!silent) {
+        setSyncMessage("Nessun nuovo evento da importare.");
+      }
+      await loadUpcoming();
+    } else if (!silent) {
+      setSyncMessage("Errore durante la sincronizzazione.");
+      setAgendaLoading(false);
+    }
+    if (!silent) setAgendaLoading(false);
+  }
+
+  async function loadCustomServices() {
+    if (!token) return;
+    const res = await fetch(`${API_URL}/admin/custom-services`, {
+      headers: { Authorization: `Bearer ${token}` },
+      cache: "no-store",
+    });
+    if (res.ok) {
+      const data = await res.json();
+      setCustomServices(data.items ?? []);
+    }
+  }
+
+  async function createCustomService() {
+    setPricingMessage("");
+    const price = parseInt(newService.price, 10);
+    if (!newService.code || !newService.label || isNaN(price) || price < 0) {
+      setPricingMessage("Compila tutti i campi obbligatori correttamente.");
+      return;
+    }
+    const res = await fetch(`${API_URL}/admin/custom-services`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify({
+        code: newService.code.toLowerCase().replace(/\s+/g, "_"),
+        label: newService.label,
+        service_type: newService.service_type,
+        price,
+        description: newService.description,
+      }),
+    });
+    const data = await res.json();
+    if (res.ok || res.status === 201) {
+      setPricingMessage(`Servizio "${newService.label}" aggiunto.`);
+      setNewService({ code: "", label: "", service_type: "fixed", price: "", description: "" });
+      setShowNewServiceForm(false);
+      await loadCustomServices();
+      await loadPricing();
+    } else {
+      setPricingMessage(data.detail || "Errore creazione servizio.");
+    }
+  }
+
+  async function deleteCustomService(code: string, label: string) {
+    if (!confirm(`Eliminare definitivamente il servizio "${label}"?`)) return;
+    setPricingMessage("");
+    const res = await fetch(`${API_URL}/admin/custom-services/${code}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (res.ok || res.status === 204) {
+      setPricingMessage(`Servizio eliminato.`);
+      await loadCustomServices();
+      await loadPricing();
+    }
+  }
+
+  async function patchStatus(id: string, status: Status, silent = false, engineer_name?: string): Promise<boolean> {
+    const body: Record<string, string> = { status };
+    if (engineer_name !== undefined) body.engineer_name = engineer_name;
     const res = await fetch(`${API_URL}/admin/bookings/${id}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ status }),
+      body: JSON.stringify(body),
     });
     if (res.status === 401) {
       logout("Sessione scaduta, effettua di nuovo il login.");
@@ -199,8 +394,8 @@ export default function AdminPage() {
     return true;
   }
 
-  async function updateStatus(id: string, status: Status) {
-    const ok = await patchStatus(id, status);
+  async function updateStatus(id: string, status: Status, engineer_name?: string) {
+    const ok = await patchStatus(id, status, false, engineer_name);
     if (!ok) return;
     setMessage(status === "CONFIRMED" ? "Sessione accettata e inviata al calendario." : "Stato aggiornato.");
     setSelectedIds((prev) => {
@@ -283,6 +478,8 @@ export default function AdminPage() {
   function setView(view: AdminView) {
     setActiveView(view);
     setMobileMenuOpen(false);
+    if (view === "listino") { loadPricing(); loadCustomServices(); }
+    if (view === "agenda" || view === "home") syncCalendar(true);
   }
 
   const sidebarContent = (
@@ -295,6 +492,12 @@ export default function AdminPage() {
           className={`rounded-lg border px-3 py-2 text-left text-sm ${activeView === "home" ? "border-accent bg-accent/10" : "border-white/15 hover:border-accent/50"}`}
         >
           Home
+        </button>
+        <button
+          onClick={() => setView("agenda")}
+          className={`rounded-lg border px-3 py-2 text-left text-sm ${activeView === "agenda" ? "border-accent bg-accent/10" : "border-white/15 hover:border-accent/50"}`}
+        >
+          Agenda sessioni
         </button>
         <button
           onClick={() => setView("calendar")}
@@ -313,6 +516,12 @@ export default function AdminPage() {
           className={`rounded-lg border px-3 py-2 text-left text-sm ${activeView === "tools" ? "border-accent bg-accent/10" : "border-white/15 hover:border-accent/50"}`}
         >
           Azioni
+        </button>
+        <button
+          onClick={() => setView("listino")}
+          className={`rounded-lg border px-3 py-2 text-left text-sm ${activeView === "listino" ? "border-accent bg-accent/10" : "border-white/15 hover:border-accent/50"}`}
+        >
+          Listino prezzi
         </button>
         <button
           onClick={() => {
@@ -453,17 +662,21 @@ export default function AdminPage() {
                     <div>
                       <p className="font-medium">{b.customer_name}</p>
                       <p className="text-sm text-muted">
-                        {b.date} · {b.start_time} · {b.package_items?.map((item) => `${item.service}(${item.hours}h)`).join(" + ") || b.service} · {b.hours}h studio · {b.price_total}€
+                        {b.date} · {b.start_time} · {b.package_items?.map((item) => `${item.service}(${item.hours}h)`).join(" + ") || b.service} · {b.hours}h · {b.price_total}€
                       </p>
-                      <p className="text-sm text-muted">
-                        {`Fonico: ${b.engineer_name || "NARDI"} · Artista: ${b.artist_name || b.customer_name}`}
-                      </p>
-                      <p className="text-sm text-muted">
-                        {b.phone}
-                      </p>
+                      {b.artist_name ? (
+                        <p className="text-sm text-muted">Artista: {b.artist_name}</p>
+                      ) : null}
+                      <p className="text-sm text-muted">{b.phone}</p>
                     </div>
                     <div className="flex gap-2">
-                      <button onClick={() => updateStatus(b.id, "CONFIRMED")} className="rounded-lg border border-accent px-3 py-1 text-xs">
+                      <button
+                        onClick={() => {
+                          setConfirmingId(b.id);
+                          setEngineerChoice("NARDI");
+                        }}
+                        className="rounded-lg border border-accent px-3 py-1 text-xs"
+                      >
                         Accetta
                       </button>
                       <button onClick={() => updateStatus(b.id, "CANCELED")} className="rounded-lg border border-white/20 px-3 py-1 text-xs">
@@ -471,22 +684,53 @@ export default function AdminPage() {
                       </button>
                     </div>
                   </div>
+                  {confirmingId === b.id ? (
+                    <div className="mt-3 rounded-xl border border-accent/30 bg-accent/5 p-4">
+                      <p className="mb-3 text-xs uppercase tracking-[0.14em] text-muted">Fonico per questa sessione</p>
+                      <div className="flex flex-wrap gap-2">
+                        {(["NARDI", "SVG", ""] as const).map((choice) => (
+                          <button
+                            key={choice || "none"}
+                            type="button"
+                            onClick={() => setEngineerChoice(choice)}
+                            className={`rounded-full border px-4 py-1.5 text-xs transition ${
+                              engineerChoice === choice ? "border-accent bg-accent/15 text-accent" : "border-white/20 text-muted hover:border-accent/40"
+                            }`}
+                          >
+                            {choice === "" ? "Nessuno" : choice}
+                          </button>
+                        ))}
+                      </div>
+                      <div className="mt-4 flex gap-2">
+                        <button
+                          onClick={() => {
+                            updateStatus(b.id, "CONFIRMED", engineerChoice || undefined);
+                            setConfirmingId(null);
+                          }}
+                          className="rounded-full border border-accent bg-accent/10 px-4 py-1.5 text-xs text-accent"
+                        >
+                          Conferma sessione
+                        </button>
+                        <button
+                          onClick={() => setConfirmingId(null)}
+                          className="rounded-full border border-white/20 px-4 py-1.5 text-xs text-muted"
+                        >
+                          Annulla
+                        </button>
+                      </div>
+                    </div>
+                  ) : null}
                 </article>
               ))}
             </div>
           ) : null}
 
-          <div className="mt-6 flex items-center justify-between">
-            {collapsibleSections ? (
-              <button type="button" onClick={() => setShowManaged((v) => !v)} className="text-left text-sm uppercase tracking-[0.12em] text-muted">
-                Già Gestite {managedSectionOpen ? "▾" : "▸"}
-              </button>
-            ) : (
+          {activeView !== "home" ? (
+            <>
+            <div className="mt-6 flex items-center justify-between">
               <h3 className="text-left text-sm uppercase tracking-[0.12em] text-muted">Già Gestite</h3>
-            )}
-            <span className="text-xs text-muted">{visibleManaged.length}</span>
-          </div>
-          {managedSectionOpen ? (
+              <span className="text-xs text-muted">{visibleManaged.length}</span>
+            </div>
             <div className="mt-3 mb-3 flex flex-wrap gap-2">
               <button onClick={() => selectMany(visibleManaged.map((b) => b.id))} className="rounded-full border border-white/20 px-3 py-1 text-xs">
                 Seleziona Visibili
@@ -495,8 +739,6 @@ export default function AdminPage() {
                 Deseleziona Visibili
               </button>
             </div>
-          ) : null}
-          {managedSectionOpen ? (
             <div className="mt-3 grid gap-2">
               {visibleManaged.map((b) => (
                 <article key={b.id} className="rounded-lg border border-white/10 p-3">
@@ -514,10 +756,346 @@ export default function AdminPage() {
                 </article>
               ))}
             </div>
+            </>
           ) : null}
             </section>
           ) : null}
           </div>
+
+          {activeView === "agenda" || activeView === "home" ? (
+            <section className="surface rounded-2xl p-5">
+              <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+                <h2 className="text-xl font-medium">Sessioni confermate</h2>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => syncCalendar(false)}
+                    disabled={agendaLoading}
+                    className="rounded-full border border-accent bg-accent/10 px-4 py-1.5 text-xs text-accent disabled:opacity-50"
+                  >
+                    {agendaLoading ? "Sincronizzazione..." : "Sincronizza calendario"}
+                  </button>
+                  <button onClick={loadUpcoming} className="rounded-full border border-white/20 px-4 py-1.5 text-xs">
+                    Aggiorna
+                  </button>
+                </div>
+              </div>
+              {syncMessage ? <p className="mb-4 text-sm text-muted">{syncMessage}</p> : null}
+              {agendaLoading ? <p className="text-sm text-muted">Caricamento...</p> : null}
+              {!agendaLoading && upcomingSessions.length === 0 ? (
+                <p className="text-sm text-muted">Nessuna sessione confermata in programma.</p>
+              ) : null}
+              {!agendaLoading ? (
+                <div className="space-y-2">
+                  {upcomingSessions.reduce<{ date: string; items: AdminBooking[] }[]>((groups, b) => {
+                    const last = groups[groups.length - 1];
+                    if (last && last.date === b.date) {
+                      last.items.push(b);
+                    } else {
+                      groups.push({ date: b.date, items: [b] });
+                    }
+                    return groups;
+                  }, []).map(({ date, items }) => (
+                    <div key={date}>
+                      <p className="mb-2 mt-5 first:mt-0 text-xs uppercase tracking-[0.18em] text-accent">
+                        {new Date(date + "T12:00:00").toLocaleDateString("it-IT", { weekday: "long", day: "numeric", month: "long" })}
+                      </p>
+                      <div className="space-y-2">
+                        {items.map((b) => (
+                          <article key={b.id} className="flex items-start gap-4 rounded-xl border border-white/10 bg-white/[0.02] px-4 py-3">
+                            <div className="min-w-[52px] text-center">
+                              <p className="text-lg font-semibold tabular-nums">{b.start_time.slice(0, 5)}</p>
+                              <p className="text-[11px] text-muted">{b.hours}h</p>
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium truncate">
+                                {b.artist_name || b.customer_name}
+                              </p>
+                              <p className="text-xs text-muted mt-0.5">
+                                {b.package_items?.map((i) => `${i.service.toUpperCase()}${i.hours > 1 ? ` ${i.hours}h` : ""}`).join(" · ") || b.service.toUpperCase()}
+                                {b.engineer_name ? ` · Fonico: ${b.engineer_name}` : ""}
+                              </p>
+                              {b.customer_name !== b.artist_name ? (
+                                <p className="text-xs text-muted">{b.customer_name} · {b.phone}</p>
+                              ) : (
+                                <p className="text-xs text-muted">{b.phone}</p>
+                              )}
+                            </div>
+                            <p className="text-sm font-medium text-accent whitespace-nowrap">{b.price_total} €</p>
+                          </article>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : null}
+            </section>
+          ) : null}
+
+          {activeView === "home" ? (
+            <section className="surface rounded-2xl p-5">
+              <div className="mb-4 flex items-center justify-between">
+                <button type="button" onClick={() => setShowManaged((v) => !v)} className="text-left text-sm uppercase tracking-[0.12em] text-muted">
+                  Già Gestite {managedSectionOpen ? "▾" : "▸"}
+                </button>
+                <span className="text-xs text-muted">{visibleManaged.length}</span>
+              </div>
+              {managedSectionOpen ? (
+                <div className="mb-3 flex flex-wrap gap-2">
+                  <button onClick={() => selectMany(visibleManaged.map((b) => b.id))} className="rounded-full border border-white/20 px-3 py-1 text-xs">
+                    Seleziona Visibili
+                  </button>
+                  <button onClick={() => unselectMany(visibleManaged.map((b) => b.id))} className="rounded-full border border-white/20 px-3 py-1 text-xs">
+                    Deseleziona Visibili
+                  </button>
+                </div>
+              ) : null}
+              {managedSectionOpen ? (
+                <div className="grid gap-2">
+                  {visibleManaged.length === 0 ? <p className="text-sm text-muted">Nessuna sessione gestita.</p> : null}
+                  {visibleManaged.map((b) => (
+                    <article key={b.id} className="rounded-lg border border-white/10 p-3">
+                      <div className="mb-1 flex items-center justify-between">
+                        <label className="flex items-center gap-2 text-xs text-muted">
+                          <input type="checkbox" checked={selectedIds.has(b.id)} onChange={() => toggleSelected(b.id)} />
+                          Seleziona
+                        </label>
+                        <span className="text-xs text-muted">{b.status}</span>
+                      </div>
+                      <p className="text-sm">
+                        {b.date} {b.start_time} · {b.customer_name}
+                      </p>
+                      <p className="text-xs text-muted">{`Fonico: ${b.engineer_name || "NARDI"} · Artista: ${b.artist_name || b.customer_name}`}</p>
+                    </article>
+                  ))}
+                </div>
+              ) : null}
+            </section>
+          ) : null}
+
+          {activeView === "listino" ? (
+            <section className="surface rounded-2xl p-5">
+              <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+                <h2 className="text-xl font-medium">Listino prezzi</h2>
+                <div className="flex gap-2">
+                  <button
+                    onClick={async () => {
+                      if (!confirm("Vuoi salvare i prezzi attuali come default? Questa operazione sovrascrive i valori base nel file di configurazione.")) return;
+                      setPricingMessage("");
+                      const res = await fetch(`${API_URL}/admin/pricing/save-defaults`, {
+                        method: "POST",
+                        headers: { Authorization: `Bearer ${token}` },
+                      });
+                      if (res.ok) {
+                        setPricingMessage("Prezzi salvati come default. I prezzi modificati sono ora il nuovo punto di partenza.");
+                        await loadPricing();
+                      } else {
+                        setPricingMessage("Errore durante il salvataggio.");
+                      }
+                    }}
+                    className="rounded-full border border-white/20 px-4 py-1.5 text-xs text-muted hover:border-accent/40 hover:text-text"
+                  >
+                    Salva come default
+                  </button>
+                  <button onClick={loadPricing} className="rounded-full border border-white/20 px-4 py-1.5 text-xs">
+                    Aggiorna
+                  </button>
+                </div>
+              </div>
+              {pricingMessage ? (
+                <p className="mb-4 text-sm text-muted">{pricingMessage}</p>
+              ) : null}
+              {pricingLoading ? (
+                <p className="text-sm text-muted">Caricamento...</p>
+              ) : (
+                <div className="space-y-6">
+                  {/* Servizi di default */}
+                  <div>
+                    <p className="mb-3 text-xs uppercase tracking-[0.18em] text-muted">Servizi standard</p>
+                    <div className="grid gap-3">
+                      {pricingServices.map((s) => (
+                        <div
+                          key={s.code}
+                          className={`rounded-xl border p-4 transition ${s.active ? "border-white/15" : "border-white/8 opacity-50"}`}
+                        >
+                          <div className="flex flex-wrap items-start justify-between gap-3">
+                            <div>
+                              <p className="font-medium">{s.label}</p>
+                              <p className="mt-0.5 text-xs text-muted">
+                                {s.type === "hourly" ? "Tariffa oraria" : "Prezzo fisso"} · default {s.base_price} €
+                              </p>
+                            </div>
+                            <button
+                              onClick={() => toggleActive(s.code, !s.active)}
+                              className={`rounded-full border px-3 py-1 text-xs transition ${
+                                s.active ? "border-accent/50 bg-accent/10 text-accent" : "border-white/20 text-muted hover:border-accent/40"
+                              }`}
+                            >
+                              {s.active ? "Attivo" : "Disattivato"}
+                            </button>
+                          </div>
+                          <div className="mt-3 flex flex-wrap items-center gap-3">
+                            <div className="flex items-center gap-2">
+                              <input
+                                type="number"
+                                min={0}
+                                value={pricingEdits[s.code] ?? String(s.price)}
+                                onChange={(e) => setPricingEdits((prev) => ({ ...prev, [s.code]: e.target.value }))}
+                                className="w-28 rounded-lg border border-white/20 bg-transparent px-3 py-1.5 text-sm"
+                              />
+                              <span className="text-sm text-muted">EUR{s.type === "hourly" ? " / ora" : ""}</span>
+                            </div>
+                            <button onClick={() => savePricing(s.code)} className="rounded-full border border-accent bg-accent/10 px-4 py-1.5 text-xs text-accent">
+                              Salva
+                            </button>
+                            {s.price !== s.base_price ? (
+                              <button onClick={() => resetPricing(s.code)} className="rounded-full border border-white/20 px-4 py-1.5 text-xs text-muted">
+                                Ripristina default ({s.base_price} €)
+                              </button>
+                            ) : null}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Servizi custom */}
+                  <div>
+                    <div className="mb-3 flex items-center justify-between">
+                      <p className="text-xs uppercase tracking-[0.18em] text-muted">Servizi aggiuntivi</p>
+                      <button
+                        onClick={() => setShowNewServiceForm((v) => !v)}
+                        className="rounded-full border border-accent bg-accent/10 px-4 py-1.5 text-xs text-accent"
+                      >
+                        {showNewServiceForm ? "Annulla" : "+ Aggiungi servizio"}
+                      </button>
+                    </div>
+
+                    {showNewServiceForm ? (
+                      <div className="mb-4 rounded-xl border border-accent/30 bg-accent/5 p-4">
+                        <p className="mb-3 text-sm font-medium">Nuovo servizio</p>
+                        <div className="grid gap-3 sm:grid-cols-2">
+                          <div>
+                            <label className="mb-1 block text-xs text-muted">Nome *</label>
+                            <input
+                              placeholder="es. Pack Promo"
+                              value={newService.label}
+                              onChange={(e) => setNewService((p) => ({ ...p, label: e.target.value }))}
+                              className="w-full rounded-lg border border-white/20 bg-transparent px-3 py-2 text-sm"
+                            />
+                          </div>
+                          <div>
+                            <label className="mb-1 block text-xs text-muted">Codice interno * (solo lettere/numeri/_)</label>
+                            <input
+                              placeholder="es. pack_promo"
+                              value={newService.code}
+                              onChange={(e) => setNewService((p) => ({ ...p, code: e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, "") }))}
+                              className="w-full rounded-lg border border-white/20 bg-transparent px-3 py-2 text-sm font-mono"
+                            />
+                          </div>
+                          <div>
+                            <label className="mb-1 block text-xs text-muted">Tipo</label>
+                            <select
+                              value={newService.service_type}
+                              onChange={(e) => setNewService((p) => ({ ...p, service_type: e.target.value as "fixed" | "hourly" }))}
+                              className="w-full rounded-lg border border-white/20 bg-transparent px-3 py-2 text-sm"
+                            >
+                              <option value="fixed">Prezzo fisso</option>
+                              <option value="hourly">Tariffa oraria</option>
+                            </select>
+                          </div>
+                          <div>
+                            <label className="mb-1 block text-xs text-muted">Prezzo (€) *</label>
+                            <input
+                              type="number"
+                              min={0}
+                              placeholder="0"
+                              value={newService.price}
+                              onChange={(e) => setNewService((p) => ({ ...p, price: e.target.value }))}
+                              className="w-full rounded-lg border border-white/20 bg-transparent px-3 py-2 text-sm"
+                            />
+                          </div>
+                          <div className="sm:col-span-2">
+                            <label className="mb-1 block text-xs text-muted">Descrizione</label>
+                            <input
+                              placeholder="Breve descrizione del servizio"
+                              value={newService.description}
+                              onChange={(e) => setNewService((p) => ({ ...p, description: e.target.value }))}
+                              className="w-full rounded-lg border border-white/20 bg-transparent px-3 py-2 text-sm"
+                            />
+                          </div>
+                        </div>
+                        <div className="mt-4 flex gap-2">
+                          <button onClick={createCustomService} className="rounded-full border border-accent bg-accent/10 px-5 py-2 text-xs text-accent">
+                            Crea servizio
+                          </button>
+                        </div>
+                      </div>
+                    ) : null}
+
+                    {customServices.length === 0 && !showNewServiceForm ? (
+                      <p className="text-sm text-muted">Nessun servizio aggiuntivo. Clicca "+ Aggiungi servizio" per crearne uno.</p>
+                    ) : null}
+
+                    <div className="grid gap-3">
+                      {customServices.map((s) => (
+                        <div key={s.code} className={`rounded-xl border p-4 transition ${s.active ? "border-white/15" : "border-white/8 opacity-50"}`}>
+                          <div className="flex flex-wrap items-start justify-between gap-3">
+                            <div>
+                              <p className="font-medium">{s.label}</p>
+                              <p className="mt-0.5 text-xs text-muted font-mono">{s.code} · {s.service_type === "hourly" ? "Tariffa oraria" : "Prezzo fisso"} · {s.price} €</p>
+                              {s.description ? <p className="mt-1 text-xs text-muted">{s.description}</p> : null}
+                            </div>
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => toggleActive(s.code, !s.active)}
+                                className={`rounded-full border px-3 py-1 text-xs transition ${s.active ? "border-accent/50 bg-accent/10 text-accent" : "border-white/20 text-muted"}`}
+                              >
+                                {s.active ? "Attivo" : "Disattivato"}
+                              </button>
+                              <button
+                                onClick={() => deleteCustomService(s.code, s.label)}
+                                className="rounded-full border border-white/15 px-3 py-1 text-xs text-muted hover:border-red-400/40 hover:text-red-400"
+                              >
+                                Elimina
+                              </button>
+                            </div>
+                          </div>
+                          <div className="mt-3 flex flex-wrap items-center gap-3">
+                            <div className="flex items-center gap-2">
+                              <input
+                                type="number"
+                                min={0}
+                                value={pricingEdits[s.code] ?? String(s.price)}
+                                onChange={(e) => setPricingEdits((prev) => ({ ...prev, [s.code]: e.target.value }))}
+                                className="w-28 rounded-lg border border-white/20 bg-transparent px-3 py-1.5 text-sm"
+                              />
+                              <span className="text-sm text-muted">EUR{s.service_type === "hourly" ? " / ora" : ""}</span>
+                            </div>
+                            <button
+                              onClick={async () => {
+                                const price = parseInt(pricingEdits[s.code] ?? "", 10);
+                                if (isNaN(price)) return;
+                                await fetch(`${API_URL}/admin/custom-services/${s.code}`, {
+                                  method: "PATCH",
+                                  headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+                                  body: JSON.stringify({ price }),
+                                });
+                                setPricingMessage("Prezzo aggiornato.");
+                                await loadCustomServices();
+                              }}
+                              className="rounded-full border border-accent bg-accent/10 px-4 py-1.5 text-xs text-accent"
+                            >
+                              Salva
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </section>
+          ) : null}
         </div>
       </div>
       {mobileMenuOpen ? (

@@ -17,7 +17,7 @@
     "noleggio": {
       "label": "Noleggio Studio",
       "type": "hourly",
-      "price": 40,
+      "price": 35,
       "currency": "EUR",
       "description": "Sala studio in noleggio con regia pronta all'uso."
     },

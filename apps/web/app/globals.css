@@ -45,7 +45,7 @@ button:hover {
 }
 
 main {
-  width: min(1120px, calc(100% - 2rem));
+  width: min(1400px, calc(100% - 3rem));
   margin: 0 auto;
 }
 

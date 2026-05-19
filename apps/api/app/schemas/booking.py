@@ -50,6 +50,7 @@ class BookingOut(BaseModel):
 
 class BookingStatusUpdate(BaseModel):
     status: BookingStatus
+    engineer_name: str | None = Field(default=None, max_length=64)
 
 
 class AvailabilityResponse(BaseModel):
@@ -78,3 +79,39 @@ class AvailabilityQuery(BaseModel):
         if v < 1 or v > 8:
             raise ValueError("hours must be between 1 and 8")
         return v
+
+
+# --- Pricing admin schemas ---
+
+class PricingServiceOut(BaseModel):
+    code: str
+    label: str
+    type: str
+    price: int
+    base_price: int
+    currency: str
+    description: str
+    active: bool
+
+
+class AdminPricingResponse(BaseModel):
+    services: list[PricingServiceOut]
+
+
+class PricingUpdate(BaseModel):
+    price: int | None = Field(default=None, ge=0, le=100_000)
+    active: bool | None = None
+
+
+class CustomServiceCreate(BaseModel):
+    code: str = Field(min_length=2, max_length=32, pattern=r"^[a-z0-9_]+$")
+    label: str = Field(min_length=2, max_length=128)
+    service_type: str = Field(default="fixed", pattern=r"^(fixed|hourly)$")
+    price: int = Field(ge=0, le=100_000)
+    currency: str = Field(default="EUR", max_length=8)
+    description: str = Field(default="", max_length=512)
+    sort_order: int = Field(default=100, ge=0)
+
+
+class UpcomingSessionsResponse(BaseModel):
+    items: list[BookingOut]

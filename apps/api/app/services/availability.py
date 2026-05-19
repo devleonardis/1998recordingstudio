@@ -32,9 +32,6 @@ def in_working_hours(booking_date: date, start_time: time, hours: int) -> bool:
 
 
 def list_available_slots(db: Session, booking_date: date, requested_hours: int) -> list[str]:
-    if not google_calendar_enabled():
-        return []
-
     start_cfg = _parse_time(settings.WORKING_HOURS_START)
     end_cfg = _parse_time(settings.WORKING_HOURS_END)
 
@@ -87,9 +84,6 @@ def validate_slot_available(
     hours: int,
     exclude_booking_id: str | None = None,
 ) -> bool:
-    if not google_calendar_enabled():
-        return False
-
     start_dt = _to_datetime(booking_date, start_time)
     end_dt = start_dt + timedelta(hours=hours)
 

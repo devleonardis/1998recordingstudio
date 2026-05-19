@@ -3,11 +3,11 @@
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { addDays, format } from "date-fns";
-import { PRICING } from "@studio/shared";
+import { PRICING, type PricingData } from "@studio/shared";
 import { API_URL } from "@/lib/config";
 import { BookingItemPayload, BookingPayload, ServiceCode } from "@/lib/types";
 
-const services: ServiceCode[] = ["prod", "rec", "mixmaster", "noleggio"];
+const ALL_SERVICE_CODES: ServiceCode[] = ["prod", "rec", "mixmaster", "noleggio"];
 const todayDate = new Date();
 todayDate.setHours(0, 0, 0, 0);
 const STUDIO_HOURS_BOOST: Partial<Record<ServiceCode, number>> = {
@@ -67,6 +67,7 @@ function formatSlotRange(start: string, hours: number): string {
 }
 
 export function BookingWizard({ onClose, compact = false }: BookingWizardProps) {
+  const [livePricing, setLivePricing] = useState<PricingData>(PRICING);
   const [step, setStep] = useState(1);
   const [selected, setSelected] = useState<ServiceCode[]>([]);
   const [hourMap, setHourMap] = useState<Record<ServiceCode, number>>({ prod: 1, rec: 1, mixmaster: 1, noleggio: 1 });
@@ -74,15 +75,31 @@ export function BookingWizard({ onClose, compact = false }: BookingWizardProps) 
   const [slot, setSlot] = useState("");
   const [slots, setSlots] = useState<string[]>([]);
   const [loadingSlots, setLoadingSlots] = useState(false);
-  const [form, setForm] = useState({ customer_name: "", engineer_name: "NARDI", artist_name: "", phone: "", notes: "" });
+  const [form, setForm] = useState({ customer_name: "", artist_name: "", phone: "", notes: "" });
   const [message, setMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const dateInputRef = useRef<HTMLInputElement>(null);
   const date = useMemo(() => format(selectedDate, "yyyy-MM-dd"), [selectedDate]);
   const minDate = useMemo(() => format(todayDate, "yyyy-MM-dd"), []);
 
+  // Prezzi live dall'API (aggiornati dall'admin); fallback al JSON statico
+  useEffect(() => {
+    fetch(`${API_URL}/pricing`, { cache: "no-store" })
+      .then((r) => r.json())
+      .then((data) => {
+        if (data?.services) setLivePricing(data as PricingData);
+      })
+      .catch(() => {});
+  }, []);
+
+  // Servizi attivi secondo il listino admin
+  const services = useMemo<ServiceCode[]>(
+    () => ALL_SERVICE_CODES.filter((code) => (livePricing.services[code] as any)?.active !== false),
+    [livePricing]
+  );
+
   const packageItems = useMemo<BookingItemPayload[]>(() => {
-    return selected.map((service) => ({ service, hours: PRICING.services[service].type === "hourly" ? hourMap[service] : 1 }));
+    return selected.map((service) => ({ service, hours: livePricing.services[service].type === "hourly" ? hourMap[service] : 1 }));
   }, [selected, hourMap]);
 
   const studioHours = useMemo(() => {
@@ -97,7 +114,7 @@ export function BookingWizard({ onClose, compact = false }: BookingWizardProps) 
 
   const estimatedPrice = useMemo(() => {
     return packageItems.reduce((sum, item) => {
-      const cfg = PRICING.services[item.service];
+      const cfg = livePricing.services[item.service];
       return sum + (cfg.type === "hourly" ? cfg.price * item.hours : cfg.price);
     }, 0);
   }, [packageItems]);
@@ -105,8 +122,6 @@ export function BookingWizard({ onClose, compact = false }: BookingWizardProps) 
   const hasSlot = slot.trim().length > 0;
   const hasArtist = form.artist_name.trim().length > 0;
   const hasPhone = form.phone.trim().length > 0;
-  const completedRequired = [hasService, hasSlot, hasArtist, hasPhone].filter(Boolean).length;
-  const progressPercent = (completedRequired / 4) * 100;
 
   function getRequiredStudioHoursForItem(item: BookingItemPayload): number {
     if (item.service === "rec" || item.service === "noleggio") return item.hours;
@@ -217,7 +232,6 @@ export function BookingWizard({ onClose, compact = false }: BookingWizardProps) 
       hours: studioHours,
       studio_hours: studioHours,
       customer_name: form.customer_name,
-      engineer_name: form.engineer_name,
       artist_name: form.artist_name,
       phone: form.phone,
       notes: form.notes,
@@ -239,7 +253,7 @@ export function BookingWizard({ onClose, compact = false }: BookingWizardProps) 
       setMessage(`Richiesta inviata. ID prenotazione: ${data.id}`);
       setStep(1);
       setSlot("");
-      setForm({ customer_name: "", engineer_name: "NARDI", artist_name: "", phone: "", notes: "" });
+      setForm({ customer_name: "", artist_name: "", phone: "", notes: "" });
     } catch {
       setMessage("API non raggiungibile.");
     } finally {
@@ -250,17 +264,6 @@ export function BookingWizard({ onClose, compact = false }: BookingWizardProps) 
   return (
     <div className={`${compact ? "mt-4" : "mt-8"} grid gap-5 lg:grid-cols-[1.2fr_0.8fr]`}>
       <form onSubmit={onSubmit} className="surface rounded-3xl p-6">
-        <div className="mb-5">
-          <div className="mb-2 flex items-center justify-between text-[11px] uppercase tracking-[0.12em] text-muted">
-            <span>Progressione compilazione</span>
-            <span>{Math.round(progressPercent)}%</span>
-          </div>
-          <div className="h-2 rounded-full bg-white/10">
-            <div className="h-2 rounded-full bg-accent transition-all duration-300" style={{ width: `${progressPercent}%` }} aria-hidden="true" />
-          </div>
-          <p className="mt-2 text-xs text-muted">Obbligatori: servizio, slot orario, nome artista, telefono.</p>
-        </div>
-
         <div className="mb-7 flex items-center gap-2">
           {steps.map((item) => {
             const active = step === item.id;
@@ -337,11 +340,10 @@ export function BookingWizard({ onClose, compact = false }: BookingWizardProps) 
                       className="w-full rounded-xl border border-white/20 bg-black/25 px-4 py-3 text-sm"
                     />
                   </div>
-                  <p className="mt-3 text-xs uppercase tracking-[0.14em] text-muted">Selezionata: {format(selectedDate, "dd/MM/yyyy")}</p>
                 </div>
                 <div className="grid gap-3 md:grid-cols-2">
                   {services.map((service) => {
-                    const cfg = PRICING.services[service];
+                    const cfg = livePricing.services[service];
                     const active = selected.includes(service);
                     return (
                       <div
@@ -358,23 +360,6 @@ export function BookingWizard({ onClose, compact = false }: BookingWizardProps) 
                         className={`rounded-xl border p-4 text-left transition ${active ? "border-accent bg-accent/10" : "border-white/15 hover:border-accent/40 hover:bg-white/[0.02]"}`}
                       >
                         <p className="font-medium">{cfg.label}</p>
-                        <p className="text-xs text-muted">{cfg.type === "hourly" ? "Servizio orario" : "Servizio a progetto"}</p>
-                        {active && service !== "noleggio" ? (
-                          <div
-                            onClick={(e) => e.stopPropagation()}
-                            className="mt-3 rounded-lg border border-white/20 bg-black/20 px-2 py-2"
-                          >
-                            <p className="mb-1 text-[11px] uppercase tracking-[0.12em] text-muted">Fonico</p>
-                            <select
-                              value={form.engineer_name}
-                              onChange={(e) => setForm((prev) => ({ ...prev, engineer_name: e.target.value }))}
-                              className="w-full rounded-md border border-white/15 bg-transparent p-2 text-sm"
-                            >
-                              <option value="NARDI">NARDI</option>
-                              <option value="SVG">SVG</option>
-                            </select>
-                          </div>
-                        ) : null}
                         {cfg.type === "hourly" && active ? (
                           <div
                             onClick={(e) => e.stopPropagation()}
@@ -408,7 +393,7 @@ export function BookingWizard({ onClose, compact = false }: BookingWizardProps) 
 
             {step === 2 ? (
               <div>
-                <p className="text-sm text-muted">Slot disponibili ({studioHours}h studio)</p>
+                <p className="text-sm text-muted">Seleziona uno slot</p>
                 <div className="mt-3 grid grid-cols-3 gap-2 md:grid-cols-5">
                   {loadingSlots ? <p className="text-sm text-muted">Caricamento...</p> : null}
                   {!loadingSlots && slots.length === 0 ? <p className="text-sm text-muted">Nessuno slot libero.</p> : null}
@@ -472,14 +457,14 @@ export function BookingWizard({ onClose, compact = false }: BookingWizardProps) 
         <div className="mt-3 space-y-2 text-sm">
           {packageItems.map((item) => (
             <p key={item.service} className="flex items-center justify-between">
-              <span>{PRICING.services[item.service].label}</span>
+              <span>{livePricing.services[item.service].label}</span>
               <span className="text-muted">{getRequiredStudioHoursForItem(item)}h</span>
             </p>
           ))}
         </div>
         <p className="mt-4 text-sm text-muted">Data: {date}</p>
         <p className="mt-1 text-sm text-muted">Slot: {slot || "-"}</p>
-        <p className="mt-1 text-sm text-muted">Studio: {studioHours}h</p>
+        <p className="mt-1 text-sm text-muted">Durata: {studioHours}h</p>
         <p className="mt-5 text-3xl font-semibold text-accent">{estimatedPrice} EUR</p>
       </aside>
     </div>

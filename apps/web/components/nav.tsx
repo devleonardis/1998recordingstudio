@@ -24,7 +24,7 @@ export function Nav() {
     <>
       {!isAdminRoute && (
         <header className="sticky top-0 z-30 border-b border-white/10 bg-bg/80 backdrop-blur-xl">
-          <div className="mx-auto flex w-[min(1120px,calc(100%-2rem))] items-center justify-between py-4">
+          <div className="mx-auto flex w-[min(1400px,calc(100%-3rem))] items-center justify-between py-4">
             <Link href="/" aria-label="Home" className="accent-hover rounded-full p-1">
               <StudioLogo />
             </Link>

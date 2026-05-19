@@ -15,17 +15,25 @@ from app.models.enums import BookingStatus, ServiceType
 from app.schemas.auth import Token
 from app.schemas.booking import (
     AdminBookingsResponse,
+    AdminPricingResponse,
     AvailabilityResponse,
     BookingItem,
     BookingCreate,
     BookingOut,
     BookingPublicResponse,
     BookingStatusUpdate,
+    CustomServiceCreate,
+    PricingServiceOut,
+    PricingUpdate,
+    UpcomingSessionsResponse,
 )
 from app.services.availability import in_working_hours, list_available_slots, validate_slot_available
+from app.services.calendar_sync import sync_calendar_to_db
 from app.services.google_calendar import create_event_for_booking, delete_event, is_enabled as google_calendar_enabled
 from app.services.notifications import send_booking_emails
-from app.services.pricing import PRICING_DATA, estimate_price, get_service_config
+from app.services.pricing import PRICING_DATA, estimate_price, get_custom_service_price, get_merged_pricing, get_service_config, save_as_default
+from app.models.pricing_override import PricingOverride
+from app.models.custom_service import CustomService
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -76,6 +84,14 @@ def _extract_booking_meta(notes: str | None) -> dict[str, str] | None:
         return {str(k): str(v) for k, v in raw.items() if isinstance(v, str) and v.strip()}
     except Exception:
         return None
+
+
+def _extract_user_notes(notes: str | None) -> str | None:
+    if not notes:
+        return None
+    if PACKAGE_TAG in notes:
+        return notes.split(PACKAGE_TAG, 1)[0].strip() or None
+    return notes.strip() or None
 
 
 def _compose_notes(user_notes: str | None, items: list[BookingItem], engineer_name: str | None, artist_name: str | None) -> str:
@@ -147,8 +163,8 @@ def health() -> dict:
 
 
 @router.get("/pricing")
-def pricing() -> dict:
-    return PRICING_DATA
+def pricing(db: Session = Depends(get_db)) -> dict:
+    return get_merged_pricing(db)
 
 
 @router.get("/availability", response_model=AvailabilityResponse)
@@ -270,6 +286,12 @@ def update_booking_status(
     package_items = _extract_package_items(booking.notes)
     meta = _extract_booking_meta(booking.notes) or {}
 
+    if payload.engineer_name is not None:
+        user_notes = _extract_user_notes(booking.notes)
+        items_for_notes = package_items or [BookingItem(service=booking.service, hours=booking.hours)]
+        booking.notes = _compose_notes(user_notes, items_for_notes, payload.engineer_name, meta.get("artist_name", ""))
+        meta = _extract_booking_meta(booking.notes) or {}
+
     if payload.status == BookingStatus.CONFIRMED:
         if not booking.google_event_id and google_calendar_enabled():
             try:
@@ -297,6 +319,205 @@ def update_booking_status(
     db.commit()
     db.refresh(booking)
     return to_booking_out(booking)
+
+
+@router.get("/admin/pricing", response_model=AdminPricingResponse)
+def admin_get_pricing(
+    db: Session = Depends(get_db),
+    _: AdminUser = Depends(get_current_admin),
+) -> AdminPricingResponse:
+    merged = get_merged_pricing(db)
+    services_out = []
+    for code, raw in PRICING_DATA["services"].items():
+        merged_entry = merged["services"].get(code, raw)
+        services_out.append(PricingServiceOut(
+            code=code,
+            label=merged_entry["label"],
+            type=merged_entry["type"],
+            price=merged_entry["price"],
+            base_price=raw["price"],
+            currency=merged_entry["currency"],
+            description=merged_entry["description"],
+            active=merged_entry.get("active", True),
+        ))
+    return AdminPricingResponse(services=services_out)
+
+
+@router.patch("/admin/pricing/{service_code}", response_model=PricingServiceOut)
+def admin_update_pricing(
+    service_code: str,
+    payload: PricingUpdate,
+    db: Session = Depends(get_db),
+    _: AdminUser = Depends(get_current_admin),
+) -> PricingServiceOut:
+    raw = PRICING_DATA["services"].get(service_code)
+    if not raw:
+        raise HTTPException(status_code=404, detail="Servizio non trovato")
+
+    override = db.get(PricingOverride, service_code)
+    if override is None:
+        override = PricingOverride(service_code=service_code)
+        db.add(override)
+
+    if payload.price is not None:
+        override.price = payload.price
+    if payload.active is not None:
+        override.active = payload.active
+
+    db.commit()
+    db.refresh(override)
+
+    effective_price = override.price if override.price is not None else raw["price"]
+    return PricingServiceOut(
+        code=service_code,
+        label=raw["label"],
+        type=raw["type"],
+        price=effective_price,
+        base_price=raw["price"],
+        currency=raw["currency"],
+        description=raw["description"],
+        active=override.active,
+    )
+
+
+@router.post("/admin/pricing/save-defaults", status_code=status.HTTP_200_OK)
+def admin_save_pricing_defaults(
+    db: Session = Depends(get_db),
+    _: AdminUser = Depends(get_current_admin),
+) -> dict:
+    save_as_default(db)
+    return {"ok": True}
+
+
+@router.delete("/admin/pricing/{service_code}/reset", status_code=status.HTTP_204_NO_CONTENT)
+def admin_reset_pricing(
+    service_code: str,
+    db: Session = Depends(get_db),
+    _: AdminUser = Depends(get_current_admin),
+) -> None:
+    if service_code not in PRICING_DATA["services"]:
+        raise HTTPException(status_code=404, detail="Servizio non trovato")
+    override = db.get(PricingOverride, service_code)
+    if override:
+        db.delete(override)
+        db.commit()
+
+
+@router.post("/admin/calendar/sync")
+def calendar_sync(
+    db: Session = Depends(get_db),
+    _: AdminUser = Depends(get_current_admin),
+) -> dict:
+    """Importa eventi futuri da Google Calendar nel DB come sessioni confermate."""
+    result = sync_calendar_to_db(db)
+    return result
+
+
+@router.get("/admin/bookings/upcoming", response_model=UpcomingSessionsResponse)
+def upcoming_sessions(
+    limit: int = Query(default=30, ge=1, le=100),
+    db: Session = Depends(get_db),
+    _: AdminUser = Depends(get_current_admin),
+) -> UpcomingSessionsResponse:
+    from datetime import date as date_class
+    today = date_class.today()
+    items = (
+        db.execute(
+            select(Booking)
+            .where(
+                and_(
+                    Booking.date >= today,
+                    Booking.status == BookingStatus.CONFIRMED,
+                )
+            )
+            .order_by(Booking.date.asc(), Booking.start_time.asc())
+            .limit(limit)
+        )
+        .scalars()
+        .all()
+    )
+    return UpcomingSessionsResponse(items=[to_booking_out(b) for b in items])
+
+
+# --- Custom services endpoints ---
+
+@router.get("/admin/custom-services")
+def list_custom_services(
+    db: Session = Depends(get_db),
+    _: AdminUser = Depends(get_current_admin),
+) -> dict:
+    rows = db.query(CustomService).order_by(CustomService.sort_order, CustomService.code).all()
+    return {"items": [
+        {
+            "code": r.code, "label": r.label, "service_type": r.service_type,
+            "price": r.price, "currency": r.currency, "description": r.description,
+            "active": r.active, "sort_order": r.sort_order,
+        }
+        for r in rows
+    ]}
+
+
+@router.post("/admin/custom-services", status_code=status.HTTP_201_CREATED)
+def create_custom_service(
+    payload: CustomServiceCreate,
+    db: Session = Depends(get_db),
+    _: AdminUser = Depends(get_current_admin),
+) -> dict:
+    if payload.code in PRICING_DATA["services"]:
+        raise HTTPException(status_code=409, detail="Il codice corrisponde a un servizio di default esistente")
+    existing = db.get(CustomService, payload.code)
+    if existing:
+        raise HTTPException(status_code=409, detail="Codice servizio già in uso")
+    row = CustomService(
+        code=payload.code,
+        label=payload.label,
+        service_type=payload.service_type,
+        price=payload.price,
+        currency=payload.currency,
+        description=payload.description,
+        sort_order=payload.sort_order,
+        active=True,
+    )
+    db.add(row)
+    db.commit()
+    db.refresh(row)
+    return {"code": row.code, "label": row.label, "service_type": row.service_type,
+            "price": row.price, "currency": row.currency, "description": row.description,
+            "active": row.active, "sort_order": row.sort_order}
+
+
+@router.patch("/admin/custom-services/{code}")
+def update_custom_service(
+    code: str,
+    payload: PricingUpdate,
+    db: Session = Depends(get_db),
+    _: AdminUser = Depends(get_current_admin),
+) -> dict:
+    row = db.get(CustomService, code)
+    if not row:
+        raise HTTPException(status_code=404, detail="Servizio non trovato")
+    if payload.price is not None:
+        row.price = payload.price
+    if payload.active is not None:
+        row.active = payload.active
+    db.commit()
+    db.refresh(row)
+    return {"code": row.code, "label": row.label, "service_type": row.service_type,
+            "price": row.price, "currency": row.currency, "description": row.description,
+            "active": row.active, "sort_order": row.sort_order}
+
+
+@router.delete("/admin/custom-services/{code}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_custom_service(
+    code: str,
+    db: Session = Depends(get_db),
+    _: AdminUser = Depends(get_current_admin),
+) -> None:
+    row = db.get(CustomService, code)
+    if not row:
+        raise HTTPException(status_code=404, detail="Servizio non trovato")
+    db.delete(row)
+    db.commit()
 
 
 @router.delete("/admin/bookings/{booking_id}", status_code=status.HTTP_204_NO_CONTENT)

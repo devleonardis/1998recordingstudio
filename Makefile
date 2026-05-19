@@ -1,7 +1,9 @@
 .PHONY: install env init go start dev api web db-up db-down migrate seed api-sync
 
+PNPM := npm exec --yes pnpm --
+
 install:
-	pnpm install
+	$(PNPM) install
 	$(MAKE) api-sync
 
 api-sync:
@@ -46,12 +48,12 @@ api:
 	cd apps/api && uv run python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
 web:
-	pnpm --filter web dev
+	$(PNPM) --filter web dev
 
 init: install env
 
 start: env db-up migrate seed
-	( cd apps/api && uv run python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000 ) & pnpm --filter web dev
+	( cd apps/api && uv run python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000 ) & $(PNPM) --filter web dev
 
 go: init start
 

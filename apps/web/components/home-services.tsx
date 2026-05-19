@@ -75,8 +75,8 @@ export function HomeServices() {
           Servizi pensati per farti capire subito da dove partire.
         </h2>
         <p className="mt-4 text-sm leading-7 text-muted md:text-base">
-          Ogni card spiega in modo diretto cosa puoi prenotare, cosa include e quando ha senso
-          sceglierlo. Se vuoi approfondire, trovi i dettagli completi nel modal.
+          Ogni servizio include una descrizione di cosa ottieni e quando ha senso sceglierlo.
+          Clicca per leggere tutti i dettagli prima di prenotare.
         </p>
       </div>
 
@@ -97,9 +97,6 @@ export function HomeServices() {
                 <p className="text-xs uppercase tracking-[0.2em] text-muted">{service.title}</p>
                 <h3 className="mt-2 text-xl text-white">{service.subtitle}</h3>
               </div>
-              <span className="rounded-full border border-accent/20 bg-accent/10 px-3 py-1 text-[11px] uppercase tracking-[0.14em] text-accent">
-                Prenotabile
-              </span>
             </div>
 
             <p className="mt-4 text-sm leading-7 text-muted">{service.description}</p>
@@ -163,8 +160,7 @@ export function HomeServices() {
             >
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <p className="text-xs uppercase tracking-[0.2em] text-muted">Servizio</p>
-                  <h3 className="mt-2 font-[var(--font-space)] text-3xl">{active.title}</h3>
+                  <h3 className="font-[var(--font-space)] text-3xl">{active.title}</h3>
                   <p className="mt-2 text-sm text-muted">{active.subtitle}</p>
                 </div>
                 <button
