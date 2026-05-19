@@ -208,6 +208,8 @@ export default function AdminPage() {
   useEffect(() => {
     if (!token) return;
     void loadBookings();
+    void loadUpcoming();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loadBookings, token]);
 
   async function loadPricing() {
@@ -404,6 +406,7 @@ export default function AdminPage() {
       return next;
     });
     await loadBookings();
+    if (status === "CONFIRMED") void loadUpcoming();
   }
 
   function toggleSelected(id: string) {
@@ -446,6 +449,7 @@ export default function AdminPage() {
     );
     if (success > 0) {
       await loadBookings();
+      if (status === "CONFIRMED") void loadUpcoming();
     }
   }
 
