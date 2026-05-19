@@ -11,6 +11,9 @@ export const metadata: Metadata = {
   title: "1998 Recording Studio | Studio di registrazione a Bari",
   description:
     "1998 Recording Studio: produzione musicale, recording, mix e master a Bari. Prenota online la tua sessione.",
+  icons: {
+    icon: "/favicon.ico",
+  },
   openGraph: {
     title: "1998 Recording Studio",
     description: "Produzione musicale Bari · Recording · Mix & Master",
