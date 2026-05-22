@@ -16,11 +16,12 @@ def run() -> None:
             db.commit()
             print(f"Seeded admin user: {settings.ADMIN_EMAIL}")
         else:
-            if not existing.password_hash.startswith("pbkdf2_sha256$"):
+            from app.core.security import verify_password
+            if not verify_password(settings.ADMIN_PASSWORD, existing.password_hash):
                 existing.password_hash = target_hash
                 db.add(existing)
                 db.commit()
-                print(f"Updated admin hash format for: {settings.ADMIN_EMAIL}")
+                print(f"Updated admin password for: {settings.ADMIN_EMAIL}")
             else:
                 print(f"Admin user already exists: {settings.ADMIN_EMAIL}")
     finally:
