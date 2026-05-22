@@ -95,7 +95,14 @@ def list_busy_intervals_for_date(target_date: date) -> list[tuple[datetime, date
         if event.get("status") == "cancelled":
             continue
 
-        start = _parse_event_datetime(event.get("start", {}))
+        # Skip all-day events (only "date", no "dateTime") — they would
+        # block the entire day (00:00→00:00+1) including all working hours.
+        # Use a timed event (e.g. 10:00–22:00 "Studio Chiuso") to close a day.
+        start_raw = event.get("start", {})
+        if "dateTime" not in start_raw:
+            continue
+
+        start = _parse_event_datetime(start_raw)
         end = _parse_event_datetime(event.get("end", {}))
         if start and end and start < end:
             # Normalize to local timezone and strip tzinfo so it matches DB-side naive datetimes.

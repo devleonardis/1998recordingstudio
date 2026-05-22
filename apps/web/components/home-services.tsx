@@ -71,7 +71,7 @@ export function HomeServices() {
     <section id="servizi" className="py-10 md:py-14">
       <div className="mx-auto max-w-3xl text-center">
         <p className="text-xs uppercase tracking-[0.28em] text-muted">Servizi</p>
-        <h2 className="mt-3 font-[var(--font-space)] text-4xl md:text-5xl">
+        <h2 className="mt-3 font-[var(--font-space)] text-[1.875rem] sm:text-4xl md:text-5xl">
           Servizi pensati per farti capire subito da dove partire.
         </h2>
         <p className="mt-4 text-sm leading-7 text-muted md:text-base">
@@ -123,7 +123,7 @@ export function HomeServices() {
         ))}
       </div>
 
-      <div className="mt-8 flex flex-col items-center justify-center gap-3 rounded-3xl border border-white/10 bg-white/[0.03] px-6 py-6 text-center md:flex-row md:text-left">
+      <div className="mt-8 flex flex-col items-center justify-center gap-3 rounded-2xl border border-white/10 bg-white/[0.03] px-5 py-5 text-center sm:rounded-3xl sm:px-6 sm:py-6 md:flex-row md:text-left">
         <p className="max-w-2xl text-sm leading-7 text-muted">
           Se non sai ancora quale servizio prenotare, scrivici su WhatsApp: ti indirizziamo verso
           la soluzione giusta prima della sessione.
@@ -132,7 +132,7 @@ export function HomeServices() {
           href={whatsappUrl}
           target="_blank"
           rel="noreferrer"
-          className="accent-hover rounded-full border border-white/20 px-5 py-2 text-xs uppercase tracking-[0.14em] text-text"
+          className="accent-hover hidden shrink-0 rounded-full border border-white/20 px-5 py-2 text-xs uppercase tracking-[0.14em] text-text sm:inline-flex"
         >
           Contattaci su WhatsApp
         </a>
@@ -144,7 +144,7 @@ export function HomeServices() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/65 px-4 py-6 backdrop-blur-md"
+            className="fixed inset-0 z-50 overflow-y-auto bg-black/65 px-4 py-6 backdrop-blur-md"
             onClick={() => setActive(null)}
             role="dialog"
             aria-modal="true"
@@ -156,7 +156,7 @@ export function HomeServices() {
               exit={{ opacity: 0, y: 16, scale: 0.99 }}
               transition={{ duration: 0.26, ease: [0.2, 0.8, 0.2, 1] }}
               onClick={(event) => event.stopPropagation()}
-              className="surface mx-auto mt-10 w-[min(760px,100%)] rounded-3xl border border-white/15 p-7"
+              className="surface mx-auto my-8 w-[min(760px,100%)] rounded-2xl border border-white/15 p-5 sm:rounded-3xl sm:p-7 md:my-14"
             >
               <div className="flex items-start justify-between gap-3">
                 <div>

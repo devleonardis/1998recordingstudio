@@ -45,8 +45,14 @@ button:hover {
 }
 
 main {
-  width: min(1400px, calc(100% - 3rem));
+  width: min(1400px, calc(100% - 2rem));
   margin: 0 auto;
+}
+
+@media (min-width: 640px) {
+  main {
+    width: min(1400px, calc(100% - 3rem));
+  }
 }
 
 .surface {
