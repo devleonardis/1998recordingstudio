@@ -4,7 +4,7 @@ from sqlalchemy import select
 
 from app.api.routes import router
 from app.core.config import settings
-from app.core.security import get_password_hash
+from app.core.security import get_password_hash, verify_password
 from app.db.session import SessionLocal
 from app.models.admin_user import AdminUser
 
@@ -31,7 +31,7 @@ def ensure_admin_user() -> None:
             admin = AdminUser(email=settings.ADMIN_EMAIL, password_hash=target_hash)
             db.add(admin)
             db.commit()
-        elif not existing.password_hash.startswith("pbkdf2_sha256$"):
+        elif not verify_password(settings.ADMIN_PASSWORD, existing.password_hash):
             existing.password_hash = target_hash
             db.add(existing)
             db.commit()
