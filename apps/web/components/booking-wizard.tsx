@@ -109,7 +109,7 @@ export function BookingWizard({ onClose, compact = false }: BookingWizardProps) 
   const [slot, setSlot] = useState("");
   const [slots, setSlots] = useState<string[]>([]);
   const [loadingSlots, setLoadingSlots] = useState(false);
-  const [form, setForm] = useState({ customer_name: "", phone: "" });
+  const [form, setForm] = useState({ customer_name: "", phone: "", artist_name: "" });
   const [message, setMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const dateInputRef = useRef<HTMLInputElement>(null);
@@ -283,6 +283,7 @@ export function BookingWizard({ onClose, compact = false }: BookingWizardProps) 
       studio_hours: studioHours,
       customer_name: form.customer_name,
       phone: form.phone,
+      artist_name: form.artist_name || undefined,
     };
 
     setSubmitting(true);
@@ -298,10 +299,7 @@ export function BookingWizard({ onClose, compact = false }: BookingWizardProps) 
         setMessage(normalizeApiError(data?.detail));
         return;
       }
-      setMessage(`Richiesta inviata. ID prenotazione: ${data.id}`);
-      setStep(1);
-      setSlot("");
-      setForm({ customer_name: "", phone: "" });
+      onClose?.();
     } catch {
       setMessage("API non raggiungibile.");
     } finally {
@@ -608,6 +606,17 @@ export function BookingWizard({ onClose, compact = false }: BookingWizardProps) 
                       className="w-full rounded-xl border border-white/15 bg-transparent px-4 py-3 text-sm placeholder:text-muted/40 focus:border-accent/60 focus:outline-none transition-colors"
                     />
                   </div>
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] uppercase tracking-[0.14em] text-muted">
+                    Nome artista <span className="text-muted/50">(opzionale)</span>
+                  </label>
+                  <input
+                    placeholder="Nome d'arte o progetto"
+                    value={form.artist_name}
+                    onChange={(e) => setForm((prev) => ({ ...prev, artist_name: e.target.value }))}
+                    className="w-full rounded-xl border border-white/15 bg-transparent px-4 py-3 text-sm placeholder:text-muted/40 focus:border-accent/60 focus:outline-none transition-colors"
+                  />
                 </div>
               </div>
             )}
