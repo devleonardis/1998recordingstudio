@@ -371,10 +371,10 @@ export function BookingWizard({ onClose, compact = false }: BookingWizardProps) 
             {step === 1 && (
               <div className="space-y-4">
                 {/* Date picker */}
-                <div className="rounded-2xl border border-white/15 bg-[linear-gradient(180deg,rgba(9,13,26,0.92),rgba(6,10,18,0.75))] p-4 shadow-[0_12px_36px_rgba(0,0,0,0.26)]">
-                  <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="overflow-hidden rounded-2xl border border-white/15 bg-[linear-gradient(180deg,rgba(9,13,26,0.92),rgba(6,10,18,0.75))] p-4 shadow-[0_12px_36px_rgba(0,0,0,0.26)]">
+                  <div className="flex flex-col items-start gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
                     <p className="text-sm font-medium">Data sessione</p>
-                    <div className="flex gap-2">
+                    <div className="flex w-full flex-wrap gap-2 sm:w-auto sm:justify-end">
                       {[
                         { label: "Oggi", offset: 0 },
                         { label: "Domani", offset: 1 },
@@ -403,7 +403,7 @@ export function BookingWizard({ onClose, compact = false }: BookingWizardProps) 
                         const parsed = parseLocalDate(e.target.value);
                         if (parsed) setSelectedDate(parsed);
                       }}
-                      className="w-full rounded-xl border border-white/20 bg-black/25 px-4 py-3 text-sm"
+                      className="booking-date-input block w-full min-w-0 max-w-full rounded-xl border border-white/20 bg-black/25 px-4 py-3 text-left text-sm"
                     />
                   </div>
                 </div>
