@@ -164,6 +164,7 @@ export function BookingWizard({ onClose, compact = false }: BookingWizardProps) 
   const hasSlot = slot.trim().length > 0;
   const hasName = form.customer_name.trim().length > 0;
   const hasPhone = form.phone.trim().length > 0;
+  const hasArtistName = form.artist_name.trim().length > 0;
 
   useEffect(() => {
     async function fetchAvailability() {
@@ -272,6 +273,10 @@ export function BookingWizard({ onClose, compact = false }: BookingWizardProps) 
     }
     if (!hasPhone) {
       setMessage("Inserisci il numero di telefono.");
+      return;
+    }
+    if (!hasArtistName) {
+      setMessage("Inserisci il nome artista.");
       return;
     }
 
@@ -609,9 +614,10 @@ export function BookingWizard({ onClose, compact = false }: BookingWizardProps) 
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-[10px] uppercase tracking-[0.14em] text-muted">
-                    Nome artista <span className="text-muted/50">(opzionale)</span>
+                    Nome artista
                   </label>
                   <input
+                    required
                     placeholder="Nome d'arte o progetto"
                     value={form.artist_name}
                     onChange={(e) => setForm((prev) => ({ ...prev, artist_name: e.target.value }))}
@@ -660,7 +666,7 @@ export function BookingWizard({ onClose, compact = false }: BookingWizardProps) 
           <div className="mt-6 space-y-3">
             <button
               type="submit"
-              disabled={submitting || !hasName || !hasPhone}
+              disabled={submitting || !hasName || !hasPhone || !hasArtistName}
               className="w-full rounded-xl bg-accent py-4 text-sm font-semibold uppercase tracking-widest text-white transition-colors hover:bg-[#d06628] disabled:cursor-not-allowed disabled:opacity-50"
             >
               {submitting ? "Invio in corso..." : "INVIA RICHIESTA"}
