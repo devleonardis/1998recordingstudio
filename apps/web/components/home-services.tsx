@@ -62,23 +62,24 @@ export function HomeServices() {
     };
   }, [active]);
 
-  function openBookingAndClose() {
-    window.dispatchEvent(new Event("open-booking-dialog"));
-    setActive(null);
-  }
-
   return (
     <section id="servizi" className="py-10 md:py-14">
-      <div className="mx-auto max-w-3xl text-center">
+      <motion.div
+        initial={{ opacity: 0, y: 16, filter: "blur(6px)" }}
+        whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+        viewport={{ once: true, amount: 0.4 }}
+        transition={{ duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
+        className="mx-auto max-w-3xl text-center"
+      >
         <p className="text-xs uppercase tracking-[0.28em] text-muted">Servizi</p>
         <h2 className="mt-3 font-[var(--font-space)] text-[1.875rem] sm:text-4xl md:text-5xl">
           Servizi pensati per farti capire subito da dove partire.
         </h2>
         <p className="mt-4 text-sm leading-7 text-muted md:text-base">
           Ogni servizio include una descrizione di cosa ottieni e quando ha senso sceglierlo.
-          Clicca per leggere tutti i dettagli prima di prenotare.
+          Clicca per leggere tutti i dettagli.
         </p>
-      </div>
+      </motion.div>
 
       <div className="mt-8 grid gap-4 md:grid-cols-2">
         {services.map((service, index) => (
@@ -125,7 +126,7 @@ export function HomeServices() {
 
       <div className="mt-8 flex flex-col items-center justify-center gap-3 rounded-2xl border border-white/10 bg-white/[0.03] px-5 py-5 text-center sm:rounded-3xl sm:px-6 sm:py-6 md:flex-row md:text-left">
         <p className="max-w-2xl text-sm leading-7 text-muted">
-          Se non sai ancora quale servizio prenotare, scrivici su WhatsApp: ti indirizziamo verso
+          Se non sai ancora quale servizio scegliere, scrivici su WhatsApp: ti indirizziamo verso
           la soluzione giusta prima della sessione.
         </p>
         <a
@@ -189,13 +190,15 @@ export function HomeServices() {
               </div>
 
               <div className="mt-7 flex flex-wrap gap-3">
-                <button
-                  type="button"
-                  onClick={openBookingAndClose}
+                <a
+                  href={whatsappUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  onClick={() => setActive(null)}
                   className="accent-hover rounded-full border border-accent bg-accent/10 px-5 py-2 text-xs uppercase tracking-[0.14em] text-accent"
                 >
-                  Prenota sessione
-                </button>
+                  Contattaci su WhatsApp
+                </a>
                 <a
                   href="#contatti"
                   onClick={() => setActive(null)}

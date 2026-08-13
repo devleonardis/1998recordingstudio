@@ -2,6 +2,10 @@
 
 import { motion } from "framer-motion";
 import { HomeServices } from "@/components/home-services";
+import { ContactsContent } from "@/components/contacts-content";
+import { MotionFade } from "@/components/motion-fade";
+
+const easeOut = [0.22, 1, 0.36, 1] as const;
 
 const whatsappUrl = "https://wa.me/393883739941";
 
@@ -46,10 +50,6 @@ const tierStyles: Record<"gold" | "platinum", { card: string; title: string }> =
 };
 
 export function HomeContent() {
-  function openBooking() {
-    window.dispatchEvent(new Event("open-booking-dialog"));
-  }
-
   return (
     <main className="pb-20 pt-5 md:pb-24 md:pt-10">
       <section className="relative overflow-hidden rounded-2xl border border-white/10 bg-[radial-gradient(circle_at_top,rgba(38,41,82,0.34),rgba(12,16,19,0.82)_48%),linear-gradient(180deg,rgba(12,16,19,0.9),rgba(12,16,19,0.98))] px-4 py-7 shadow-[0_30px_90px_rgba(0,0,0,0.24)] sm:rounded-[2rem] sm:px-6 sm:py-10 md:px-10 md:py-12">
@@ -77,64 +77,81 @@ export function HomeContent() {
             </p>
 
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-              <button
-                type="button"
-                onClick={openBooking}
-                className="accent-hover rounded-full border border-accent bg-accent px-6 py-3 text-sm font-medium uppercase tracking-[0.14em] text-[#140d09] shadow-[0_14px_40px_rgba(205,121,72,0.28)]"
-              >
-                Prenota sessione
-              </button>
               <a
                 href={whatsappUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="accent-hover hidden rounded-full border border-white/20 bg-white/[0.03] px-6 py-3 text-sm uppercase tracking-[0.14em] text-text sm:inline-flex sm:items-center sm:justify-center"
+                className="accent-hover rounded-full border border-accent bg-accent px-6 py-3 text-sm font-medium uppercase tracking-[0.14em] text-[#140d09] shadow-[0_14px_40px_rgba(205,121,72,0.28)] sm:inline-flex sm:items-center sm:justify-center"
               >
                 Contattaci su WhatsApp
+              </a>
+              <a
+                href="#contatti"
+                className="accent-hover hidden rounded-full border border-white/20 bg-white/[0.03] px-6 py-3 text-sm uppercase tracking-[0.14em] text-text sm:inline-flex sm:items-center sm:justify-center"
+              >
+                Vai ai contatti
               </a>
             </div>
 
             <div className="mt-8 grid gap-3 sm:grid-cols-3">
-              {heroHighlights.map((item) => (
-                <div
+              {heroHighlights.map((item, index) => (
+                <motion.div
                   key={item}
+                  initial={{ opacity: 0, y: 14, filter: "blur(6px)" }}
+                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                  transition={{ duration: 0.6, delay: 0.22 + index * 0.08, ease: easeOut }}
                   className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-4 text-sm leading-6 text-muted"
                 >
                   {item}
-                </div>
+                </motion.div>
               ))}
             </div>
           </motion.div>
 
           <motion.aside
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
+            initial={{ opacity: 0, y: 24, filter: "blur(8px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            transition={{ duration: 0.8, delay: 0.12, ease: easeOut }}
             className="surface rounded-2xl border-white/12 p-5 sm:rounded-[1.75rem] sm:p-6"
           >
             <p className="text-xs uppercase tracking-[0.22em] text-muted">A chi è rivolto</p>
             <h2 className="mt-3 font-[var(--font-space)] text-2xl text-white">Per artisti, vocalist, producer e team che vogliono lavorare bene.</h2>
             <div className="mt-5 space-y-4">
-              <div className="rounded-2xl border border-white/10 bg-black/10 p-4">
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.32, ease: easeOut }}
+                className="rounded-2xl border border-white/10 bg-black/10 p-4"
+              >
                 <p className="text-sm font-medium text-white">Artisti e vocalist</p>
                 <p className="mt-2 text-sm leading-6 text-muted">
                   Sessioni curate, take piu fluide e supporto in studio mentre registri.
                 </p>
-              </div>
-              <div className="rounded-2xl border border-white/10 bg-black/10 p-4">
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.4, ease: easeOut }}
+                className="rounded-2xl border border-white/10 bg-black/10 p-4"
+              >
                 <p className="text-sm font-medium text-white">Producer e team</p>
                 <p className="mt-2 text-sm leading-6 text-muted">
                   Uno spazio pronto, affidabile e gia organizzato per lavorare senza perdere tempo.
                 </p>
-              </div>
+              </motion.div>
             </div>
-            <div className="mt-6 rounded-2xl border border-accent/20 bg-accent/10 p-4">
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.48, ease: easeOut }}
+              className="mt-6 rounded-2xl border border-accent/20 bg-accent/10 p-4"
+            >
               <p className="text-xs uppercase tracking-[0.18em] text-accent">Contatto diretto</p>
               <p className="mt-2 text-sm leading-6 text-muted">
                 WhatsApp: <span className="text-white">+39 388 3739941</span>
               </p>
               <p className="text-sm leading-6 text-muted">Via Umberto Minervini 25, Bari</p>
-            </div>
+            </motion.div>
           </motion.aside>
         </div>
       </section>
@@ -143,7 +160,7 @@ export function HomeContent() {
 
       <section className="py-10 md:py-14">
         <div className="grid gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-start">
-          <div>
+          <MotionFade>
             <p className="text-xs uppercase tracking-[0.28em] text-muted">Certificazioni</p>
             <h2 className="mt-3 font-[var(--font-space)] text-[1.875rem] sm:text-4xl md:text-5xl">
               Lavori che hanno lasciato un segno anche fuori dallo studio.
@@ -153,79 +170,56 @@ export function HomeContent() {
               release collegate al nostro lavoro in studio e certificate ufficialmente.
             </p>
             <div className="mt-6 space-y-3">
-              {trustPoints.map((point) => (
-                <div
-                  key={point}
-                  className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-4 text-sm leading-6 text-muted"
-                >
-                  {point}
-                </div>
+              {trustPoints.map((point, index) => (
+                <MotionFade key={point} delay={0.08 + index * 0.06}>
+                  <div className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-4 text-sm leading-6 text-muted">
+                    {point}
+                  </div>
+                </MotionFade>
               ))}
             </div>
-          </div>
+          </MotionFade>
 
           <div className="grid gap-4">
-            {certifications.map((item) => (
-              <article key={item.embedSrc} className={`rounded-3xl border p-6 ${tierStyles[item.tier].card}`}>
-                <h3 className={`font-[var(--font-space)] text-2xl ${tierStyles[item.tier].title}`}>
-                  {item.title}
-                </h3>
-                <p className="mt-3 text-sm leading-6 text-white/70">{item.detail}</p>
-                <div className="mt-5 overflow-hidden rounded-2xl border border-white/10">
-                  <iframe
-                    src={item.embedSrc}
-                    width="100%"
-                    height="152"
-                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                    loading="lazy"
-                    title={item.title}
-                  />
-                </div>
-              </article>
+            {certifications.map((item, index) => (
+              <MotionFade key={item.embedSrc} delay={0.1 + index * 0.1}>
+                <article className={`rounded-3xl border p-6 ${tierStyles[item.tier].card}`}>
+                  <h3 className={`font-[var(--font-space)] text-2xl ${tierStyles[item.tier].title}`}>
+                    {item.title}
+                  </h3>
+                  <p className="mt-3 text-sm leading-6 text-white/70">{item.detail}</p>
+                  <div className="mt-5 overflow-hidden rounded-2xl border border-white/10">
+                    <iframe
+                      src={item.embedSrc}
+                      width="100%"
+                      height="152"
+                      allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                      loading="lazy"
+                      title={item.title}
+                    />
+                  </div>
+                </article>
+              </MotionFade>
             ))}
           </div>
         </div>
       </section>
 
       <section id="contatti" className="pb-4 pt-10 md:pb-8 md:pt-14">
-        <div className="surface overflow-hidden rounded-2xl border-white/12 sm:rounded-[2rem]">
-          <div className="grid gap-8 px-5 py-7 sm:px-6 sm:py-8 md:px-10 md:py-10 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
-            <div>
-              <p className="text-xs uppercase tracking-[0.28em] text-muted">Contatti</p>
-              <h2 className="mt-3 font-[var(--font-space)] text-[1.875rem] sm:text-4xl md:text-5xl">
-                Se hai un brano da registrare o finalizzare, possiamo partire da qui.
-              </h2>
-              <p className="mt-4 max-w-2xl text-sm leading-7 text-muted md:text-base">
-                Raccontaci cosa devi fare, che tipo di sessione ti serve e in che fase si trova il
-                progetto. Ti aiutiamo a capire il servizio giusto e ad arrivare in studio con un
-                piano chiaro.
-              </p>
-              <div className="mt-6 flex flex-wrap gap-x-6 gap-y-3 text-sm text-muted">
-                <p>WhatsApp: +39 388 3739941</p>
-                <p>Email: 19.98recordingstudio@gmail.com</p>
-                <p>Via Umberto Minervini 25, Bari</p>
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-3 sm:flex-row lg:flex-col">
-              <button
-                type="button"
-                onClick={openBooking}
-                className="accent-hover rounded-full border border-accent bg-accent px-6 py-3 text-sm font-medium uppercase tracking-[0.14em] text-[#140d09] shadow-[0_14px_40px_rgba(205,121,72,0.24)]"
-              >
-                Prenota sessione
-              </button>
-              <a
-                href={whatsappUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="accent-hover hidden rounded-full border border-white/20 bg-white/[0.03] px-6 py-3 text-center text-sm uppercase tracking-[0.14em] text-text sm:inline-flex sm:items-center sm:justify-center"
-              >
-                Contattaci su WhatsApp
-              </a>
-            </div>
+        <MotionFade>
+          <div className="surface overflow-hidden rounded-2xl border-white/12 px-5 py-7 sm:rounded-[2rem] sm:px-6 sm:py-8 md:px-10 md:py-10">
+            <p className="text-xs uppercase tracking-[0.28em] text-muted">Contatti</p>
+            <h2 className="mt-3 font-[var(--font-space)] text-[1.875rem] sm:text-4xl md:text-5xl">
+              Se hai un brano da registrare o finalizzare, possiamo partire da qui.
+            </h2>
+            <p className="mt-4 max-w-2xl text-sm leading-7 text-muted md:text-base">
+              Raccontaci cosa devi fare, che tipo di sessione ti serve e in che fase si trova il
+              progetto. Ti aiutiamo a capire il servizio giusto e ad arrivare in studio con un
+              piano chiaro.
+            </p>
+            <ContactsContent />
           </div>
-        </div>
+        </MotionFade>
       </section>
     </main>
   );
