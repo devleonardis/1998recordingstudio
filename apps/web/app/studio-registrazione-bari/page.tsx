@@ -1,5 +1,9 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { ViewTransition } from "react";
+import { JourneyLink } from "@/components/fx/journey-link";
+import { FxCard } from "@/components/fx/fx-card";
+import { Scene } from "@/components/fx/reveal";
+import { NextTrack } from "@/components/next-track";
 
 export const metadata: Metadata = {
   title: "Studio di Registrazione a Bari | 19.98 Studio — Recording, Prod, Mix",
@@ -93,18 +97,20 @@ export default function StudioRegistrazioneBariPage() {
 
       <main className="pb-20 pt-5 md:pb-24 md:pt-10">
         {/* ── Hero ──────────────────────────────────────────────────────────── */}
-        <section className="mb-20 md:mb-24">
+        <section data-chapter="Intro" className="mb-20 md:mb-24">
           <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-xs uppercase tracking-[0.14em] text-[#B8ABA2]">
             <span className="text-[#CD7948]">📍</span>
             Via Umberto Minervini 25 · Bari
           </div>
 
-          <h1
-            className="mb-5 max-w-3xl text-3xl font-semibold leading-tight text-white sm:text-4xl md:text-5xl lg:text-6xl"
-            style={{ fontFamily: "var(--font-space)" }}
-          >
-            Studio di Registrazione Professionale a Bari
-          </h1>
+          <ViewTransition name="svc-rec" share="morph">
+            <h1
+              className="mb-5 max-w-3xl text-3xl font-semibold leading-tight text-white sm:text-4xl md:text-5xl lg:text-6xl"
+              style={{ fontFamily: "var(--font-space)" }}
+            >
+              Studio di Registrazione Professionale a Bari
+            </h1>
+          </ViewTransition>
 
           <p className="mb-8 max-w-2xl text-base leading-7 text-[#B8ABA2] md:text-lg">
             Il 19.98 Recording Studio è il punto di riferimento per artisti, producer e vocalist a
@@ -113,12 +119,12 @@ export default function StudioRegistrazioneBariPage() {
           </p>
 
           <div className="flex flex-col gap-3 sm:flex-row">
-            <Link
+            <JourneyLink
               href="/#contatti"
               className="rounded-full border border-[#CD7948] bg-[#CD7948] px-6 py-3 text-sm font-medium uppercase tracking-[0.14em] text-[#140d09] text-center"
             >
               Contattaci
-            </Link>
+            </JourneyLink>
             <a
               href="https://wa.me/393883739941"
               target="_blank"
@@ -131,7 +137,7 @@ export default function StudioRegistrazioneBariPage() {
         </section>
 
         {/* ── Perché scegliere 19.98 ────────────────────────────────────────── */}
-        <section className="mb-20 md:mb-24">
+        <Scene chapter="Perché noi" className="mb-20 md:mb-24">
           <h2
             className="mb-6 text-2xl font-semibold text-white md:text-3xl"
             style={{ fontFamily: "var(--font-space)" }}
@@ -152,7 +158,7 @@ export default function StudioRegistrazioneBariPage() {
             {[
               {
                 title: "Risultati certificati",
-                text: "Dischi d'oro FIMI ottenuti grazie a sessioni realizzate nei nostri studi. Un track record che parla da solo.",
+                text: "Dischi d'oro e di platino FIMI ottenuti grazie a sessioni realizzate nei nostri studi. Un track record che parla da solo.",
               },
               {
                 title: "Fonico dedicato",
@@ -163,16 +169,16 @@ export default function StudioRegistrazioneBariPage() {
                 text: "Microfoni a condensatore, preamp analogici, monitor calibrati e DAW di riferimento per ogni tipo di progetto.",
               },
             ].map((card) => (
-              <div key={card.title} className="surface accent-hover rounded-2xl p-6">
+              <FxCard key={card.title} className="surface accent-hover rounded-2xl p-6">
                 <h3 className="mb-2 font-semibold text-white">{card.title}</h3>
                 <p className="text-sm leading-6 text-[#B8ABA2]">{card.text}</p>
-              </div>
+              </FxCard>
             ))}
           </div>
-        </section>
+        </Scene>
 
         {/* ── Servizi ───────────────────────────────────────────────────────── */}
-        <section className="mb-20 md:mb-24">
+        <Scene chapter="Servizi" className="mb-20 md:mb-24">
           <h2
             className="mb-6 text-2xl font-semibold text-white md:text-3xl"
             style={{ fontFamily: "var(--font-space)" }}
@@ -198,7 +204,7 @@ export default function StudioRegistrazioneBariPage() {
                 desc: "La sala di registrazione disponibile per producer, beatmaker e team creativi che lavorano in autonomia, con setup professionale incluso.",
               },
             ].map((service) => (
-              <div key={service.title} className="surface accent-hover rounded-2xl p-6">
+              <FxCard key={service.title} className="surface accent-hover rounded-2xl p-6">
                 <h3
                   className="mb-2 text-lg font-semibold text-white"
                   style={{ fontFamily: "var(--font-space)" }}
@@ -206,13 +212,13 @@ export default function StudioRegistrazioneBariPage() {
                   {service.title}
                 </h3>
                 <p className="text-sm leading-6 text-[#B8ABA2]">{service.desc}</p>
-              </div>
+              </FxCard>
             ))}
           </div>
-        </section>
+        </Scene>
 
         {/* ── Risultati ─────────────────────────────────────────────────────── */}
-        <section className="mb-20 md:mb-24">
+        <Scene chapter="Risultati" className="mb-20 md:mb-24">
           <h2
             className="mb-6 text-2xl font-semibold text-white md:text-3xl"
             style={{ fontFamily: "var(--font-space)" }}
@@ -221,7 +227,7 @@ export default function StudioRegistrazioneBariPage() {
           </h2>
           <p className="mb-8 max-w-3xl text-base leading-7 text-[#B8ABA2]">
             Il 19.98 Recording Studio ha contribuito alla realizzazione di brani che hanno ottenuto
-            la certificazione disco d&apos;oro dalla FIMI — la Federazione Industria Musicale
+            le certificazioni disco d&apos;oro e disco di platino dalla FIMI — la Federazione Industria Musicale
             Italiana. Questi riconoscimenti sono la prova concreta della qualità del lavoro svolto
             all&apos;interno delle nostre sessioni e dell&apos;efficacia del processo produttivo che
             mettiamo a disposizione di ogni artista.
@@ -232,7 +238,7 @@ export default function StudioRegistrazioneBariPage() {
                 Certificazione
               </p>
               <p className="text-base leading-6 text-[#E4E2DB]">
-                Dischi d&apos;oro certificati FIMI ottenuti su brani registrati, prodotti o mixati
+                Dischi d&apos;oro e di platino certificati FIMI ottenuti su brani registrati, prodotti o mixati
                 al 19.98 Recording Studio di Bari.
               </p>
             </div>
@@ -246,10 +252,10 @@ export default function StudioRegistrazioneBariPage() {
               </p>
             </div>
           </div>
-        </section>
+        </Scene>
 
         {/* ── Contatti / Come arrivare ───────────────────────────────────────── */}
-        <section className="mb-20 md:mb-24">
+        <Scene chapter="Dove siamo" className="mb-20 md:mb-24">
           <h2
             className="mb-6 text-2xl font-semibold text-white md:text-3xl"
             style={{ fontFamily: "var(--font-space)" }}
@@ -294,10 +300,10 @@ export default function StudioRegistrazioneBariPage() {
               </p>
             </div>
           </div>
-        </section>
+        </Scene>
 
         {/* ── FAQ ───────────────────────────────────────────────────────────── */}
-        <section className="mb-20 md:mb-24">
+        <Scene chapter="FAQ" className="mb-20 md:mb-24">
           <h2
             className="mb-8 text-2xl font-semibold text-white md:text-3xl"
             style={{ fontFamily: "var(--font-space)" }}
@@ -323,16 +329,16 @@ export default function StudioRegistrazioneBariPage() {
                 a: "Siamo in Via Umberto Minervini 25, Bari. La sede è facilmente raggiungibile. Per un sopralluogo preliminare o indicazioni stradali, contattaci via WhatsApp o email.",
               },
             ].map((faq) => (
-              <div key={faq.q} className="surface rounded-2xl p-6">
+              <FxCard key={faq.q} className="surface rounded-2xl p-6">
                 <h3 className="mb-2 font-semibold text-white">{faq.q}</h3>
                 <p className="text-sm leading-6 text-[#B8ABA2]">{faq.a}</p>
-              </div>
+              </FxCard>
             ))}
           </div>
-        </section>
+        </Scene>
 
         {/* ── CTA finale ────────────────────────────────────────────────────── */}
-        <section className="rounded-2xl border border-[#CD7948]/20 bg-[#CD7948]/5 px-6 py-10 text-center md:px-12">
+        <Scene chapter="Inizia" className="rounded-2xl border border-[#CD7948]/20 bg-[#CD7948]/5 px-6 py-10 text-center md:px-12">
           <p className="mb-2 text-sm uppercase tracking-[0.14em] text-[#CD7948]">
             Studio di Registrazione · Bari
           </p>
@@ -347,12 +353,12 @@ export default function StudioRegistrazioneBariPage() {
             master con fonico dedicato e risultati certificati.
           </p>
           <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Link
+            <JourneyLink
               href="/#contatti"
               className="rounded-full border border-[#CD7948] bg-[#CD7948] px-6 py-3 text-sm font-medium uppercase tracking-[0.14em] text-[#140d09]"
             >
               Contattaci
-            </Link>
+            </JourneyLink>
             <a
               href="https://wa.me/393883739941"
               target="_blank"
@@ -362,7 +368,8 @@ export default function StudioRegistrazioneBariPage() {
               Scrivici su WhatsApp
             </a>
           </div>
-        </section>
+        </Scene>
+        <NextTrack href="/produzione-musicale" number="03" title="Produzione" caption="Concept · Arrangiamento · Sound design" />
       </main>
     </>
   );

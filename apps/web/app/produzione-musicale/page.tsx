@@ -1,5 +1,10 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { ViewTransition } from "react";
+import { JourneyLink } from "@/components/fx/journey-link";
+import { FxCard } from "@/components/fx/fx-card";
+import { Scene } from "@/components/fx/reveal";
+import { HorizontalTrack, Marquee } from "@/components/fx/stack";
+import { NextTrack } from "@/components/next-track";
 
 export const metadata: Metadata = {
   title: "Produzione Musicale Professionale a Bari | 19.98 Studio",
@@ -80,17 +85,19 @@ export default function ProduzioneMusicalePage() {
 
       <main className="pb-20 pt-5 md:pb-24 md:pt-10">
         {/* ── Hero ──────────────────────────────────────────────────────────── */}
-        <section className="mb-20 md:mb-24">
+        <section data-chapter="Intro" className="mb-20 md:mb-24">
           <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-xs uppercase tracking-[0.14em] text-[#B8ABA2]">
             Servizio · Produzione Musicale
           </div>
 
-          <h1
-            className="mb-5 max-w-3xl text-3xl font-semibold leading-tight text-white sm:text-4xl md:text-5xl"
-            style={{ fontFamily: "var(--font-space)" }}
-          >
-            Produzione Musicale Professionale a Bari
-          </h1>
+          <ViewTransition name="svc-prod" share="morph">
+            <h1
+              className="mb-5 max-w-3xl text-3xl font-semibold leading-tight text-white sm:text-4xl md:text-5xl"
+              style={{ fontFamily: "var(--font-space)" }}
+            >
+              Produzione Musicale Professionale a Bari
+            </h1>
+          </ViewTransition>
 
           <p className="mb-8 max-w-2xl text-base leading-7 text-[#B8ABA2] md:text-lg">
             Il 19.98 Recording Studio offre un servizio completo di produzione musicale a Bari:
@@ -99,12 +106,12 @@ export default function ProduzioneMusicalePage() {
           </p>
 
           <div className="flex flex-col gap-3 sm:flex-row">
-            <Link
+            <JourneyLink
               href="/#contatti"
               className="rounded-full border border-[#CD7948] bg-[#CD7948] px-6 py-3 text-sm font-medium uppercase tracking-[0.14em] text-[#140d09] text-center"
             >
               Contattaci
-            </Link>
+            </JourneyLink>
             <a
               href="https://wa.me/393883739941"
               target="_blank"
@@ -117,7 +124,7 @@ export default function ProduzioneMusicalePage() {
         </section>
 
         {/* ── Cos'è la produzione ───────────────────────────────────────────── */}
-        <section className="mb-16 max-w-3xl md:mb-20">
+        <Scene chapter="Cos'è" className="mb-16 max-w-3xl md:mb-20">
           <h2
             className="mb-4 text-2xl font-semibold text-white"
             style={{ fontFamily: "var(--font-space)" }}
@@ -137,17 +144,17 @@ export default function ProduzioneMusicalePage() {
             costruiamo con te un suono che ti rappresenti in modo autentico. Non esiste una formula
             unica: ogni progetto ha la sua identità sonora.
           </p>
-        </section>
+        </Scene>
 
         {/* ── Processo ──────────────────────────────────────────────────────── */}
-        <section className="mb-16 md:mb-20">
+        <Scene chapter="Processo" className="mb-16 md:mb-20">
           <h2
             className="mb-6 text-2xl font-semibold text-white"
             style={{ fontFamily: "var(--font-space)" }}
           >
             Il processo di produzione al 19.98
           </h2>
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <HorizontalTrack>
             {[
               {
                 step: "01",
@@ -180,17 +187,17 @@ export default function ProduzioneMusicalePage() {
                 text: "Il producer segue le sessioni di registrazione vocale per garantire che la performance si integri perfettamente con la produzione.",
               },
             ].map((item) => (
-              <div key={item.step} className="surface accent-hover rounded-2xl p-6">
+              <FxCard key={item.step} wrapperClassName="w-[78vw] shrink-0 sm:w-[380px]" className="surface accent-hover rounded-2xl p-6">
                 <span className="mb-3 block text-2xl font-bold text-[#CD7948]/40">{item.step}</span>
                 <h3 className="mb-2 font-semibold text-white">{item.title}</h3>
                 <p className="text-sm leading-6 text-[#B8ABA2]">{item.text}</p>
-              </div>
+              </FxCard>
             ))}
-          </div>
-        </section>
+          </HorizontalTrack>
+        </Scene>
 
         {/* ── Generi ────────────────────────────────────────────────────────── */}
-        <section className="mb-16 max-w-3xl md:mb-20">
+        <Scene chapter="Generi" className="mb-16 max-w-3xl md:mb-20">
           <h2
             className="mb-4 text-2xl font-semibold text-white"
             style={{ fontFamily: "var(--font-space)" }}
@@ -202,22 +209,14 @@ export default function ProduzioneMusicalePage() {
             italiana e internazionale contemporanea. Conosciamo le regole sonore di ogni stile e
             sappiamo come adattare la produzione al mercato di riferimento.
           </p>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            {["Rap", "Trap", "Pop italiano", "RnB", "Afrobeat", "Urban", "Drill", "Indie pop"].map(
-              (genre) => (
-                <div
-                  key={genre}
-                  className="surface rounded-xl px-4 py-3 text-center text-sm font-medium text-[#E4E2DB]"
-                >
-                  {genre}
-                </div>
-              ),
-            )}
-          </div>
-        </section>
+          <Marquee
+            items={["Rap", "Trap", "Pop italiano", "RnB", "Afrobeat", "Urban", "Drill", "Indie pop"]}
+            className="font-[var(--font-space)] text-3xl font-semibold text-white/80 sm:text-5xl"
+          />
+        </Scene>
 
         {/* ── Cosa include ──────────────────────────────────────────────────── */}
-        <section className="mb-16 max-w-3xl md:mb-20">
+        <Scene chapter="Cosa include" className="mb-16 max-w-3xl md:mb-20">
           <h2
             className="mb-4 text-2xl font-semibold text-white"
             style={{ fontFamily: "var(--font-space)" }}
@@ -241,10 +240,10 @@ export default function ProduzioneMusicalePage() {
               </li>
             ))}
           </ul>
-        </section>
+        </Scene>
 
         {/* ── A chi è rivolto ───────────────────────────────────────────────── */}
-        <section className="mb-16 md:mb-20">
+        <Scene chapter="Per chi" className="mb-16 md:mb-20">
           <h2
             className="mb-6 text-2xl font-semibold text-white"
             style={{ fontFamily: "var(--font-space)" }}
@@ -270,16 +269,16 @@ export default function ProduzioneMusicalePage() {
                 text: "Artisti, producer e vocalist che lavorano insieme trovano al 19.98 uno spazio organizzato per sessioni multi-track.",
               },
             ].map((card) => (
-              <div key={card.title} className="surface accent-hover rounded-2xl p-6">
+              <FxCard key={card.title} className="surface accent-hover rounded-2xl p-6">
                 <h3 className="mb-2 font-semibold text-white">{card.title}</h3>
                 <p className="text-sm leading-6 text-[#B8ABA2]">{card.text}</p>
-              </div>
+              </FxCard>
             ))}
           </div>
-        </section>
+        </Scene>
 
         {/* ── CTA ───────────────────────────────────────────────────────────── */}
-        <section className="rounded-2xl border border-[#CD7948]/20 bg-[#CD7948]/5 px-6 py-10 text-center md:px-12">
+        <Scene chapter="Inizia" className="rounded-2xl border border-[#CD7948]/20 bg-[#CD7948]/5 px-6 py-10 text-center md:px-12">
           <p className="mb-2 text-sm uppercase tracking-[0.14em] text-[#CD7948]">
             Produzione Musicale · Bari
           </p>
@@ -294,12 +293,12 @@ export default function ProduzioneMusicalePage() {
             Direzione artistica, arrangiamento e sound design con producer esperti.
           </p>
           <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Link
+            <JourneyLink
               href="/#contatti"
               className="rounded-full border border-[#CD7948] bg-[#CD7948] px-6 py-3 text-sm font-medium uppercase tracking-[0.14em] text-[#140d09]"
             >
               Contattaci
-            </Link>
+            </JourneyLink>
             <a
               href="https://wa.me/393883739941"
               target="_blank"
@@ -309,7 +308,8 @@ export default function ProduzioneMusicalePage() {
               Scrivici su WhatsApp
             </a>
           </div>
-        </section>
+        </Scene>
+        <NextTrack href="/mix-master" number="04" title="Mix & Master" caption="Bilanciamento · Loudness · Delivery" />
       </main>
     </>
   );

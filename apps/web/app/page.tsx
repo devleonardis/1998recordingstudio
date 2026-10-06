@@ -4,7 +4,7 @@ import { HomeContent } from "@/components/home-content";
 export const metadata: Metadata = {
   title: "Studio di Registrazione Bari | 19.98 Studio — Prod, Rec, Mix & Master",
   description:
-    "19.98 Recording Studio a Bari: produzione musicale, recording, mix e master professionali. Dischi d'oro certificati. Prenota la tua sessione online. Via Umberto Minervini 25.",
+    "19.98 Recording Studio a Bari: produzione musicale, recording, mix e master professionali. Dischi d'oro e di platino certificati. Prenota la tua sessione online. Via Umberto Minervini 25.",
   keywords: [
     "studio di registrazione Bari",
     "studio recording Bari",
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Studio di Registrazione Bari | 19.98 Studio — Prod, Rec, Mix & Master",
     description:
-      "Produzione, recording, mix e master a Bari. Studio professionale con dischi d'oro certificati. Prenota online.",
+      "Produzione, recording, mix e master a Bari. Studio professionale con dischi d'oro e di platino certificati. Prenota online.",
     url: "/",
     images: [
       {

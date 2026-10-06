@@ -172,7 +172,7 @@ export const posts: BlogPost[] = [
       {
         type: "ul",
         items: [
-          "L'esperienza e le credenziali del fonico: un engineer del suono con un portfolio di dischi d'oro certificati ha una tariffa diversa rispetto a chi inizia",
+          "L'esperienza e le credenziali del fonico: un engineer del suono con un portfolio di dischi d'oro e di platino certificati ha una tariffa diversa rispetto a chi inizia",
           "L'attrezzatura: microfoni di alta gamma, preamp professionali e monitor da studio di riferimento fanno una differenza enorme nel suono finale",
           "L'acustica della sala: studi costruiti o trattati professionalmente garantiscono registrazioni pulite senza artefatti sonori",
           "Il tipo di servizio richiesto: recording, mix, master o produzione completa hanno costi diversi",
@@ -386,7 +386,7 @@ export const posts: BlogPost[] = [
       },
       {
         type: "highlight",
-        text: "Al 19.98 Recording Studio di Bari, il servizio di mix e master è curato da fonici con esperienza su dischi d'oro certificati. Il risultato finale è ottimizzato per le piattaforme streaming e pronto per la distribuzione.",
+        text: "Al 19.98 Recording Studio di Bari, il servizio di mix e master è curato da fonici con esperienza su dischi d'oro e di platino certificati. Il risultato finale è ottimizzato per le piattaforme streaming e pronto per la distribuzione.",
       },
       { type: "cta" },
     ],
@@ -571,11 +571,11 @@ export const posts: BlogPost[] = [
       },
       {
         type: "p",
-        text: "Uno degli aspetti che distingue il 19.98 Recording Studio dagli altri studi di Bari sono i risultati concreti e certificati. Abbiamo contribuito alla realizzazione di brani che hanno ottenuto dischi d'oro ufficiali, riconoscimento delle major discografiche italiane per aver superato le soglie di streaming e vendite richieste dalla certificazione FIMI.",
+        text: "Uno degli aspetti che distingue il 19.98 Recording Studio dagli altri studi di Bari sono i risultati concreti e certificati. Abbiamo contribuito alla realizzazione di brani che hanno ottenuto dischi d'oro e di platino ufficiali, riconoscimento delle major discografiche italiane per aver superato le soglie di streaming e vendite richieste dalla certificazione FIMI.",
       },
       {
         type: "highlight",
-        text: "I dischi d'oro certificati sono il risultato di un lavoro di squadra tra artista, producer e fonico. Siamo orgogliosi di aver fatto parte di questi percorsi di successo e di continuare a supportare nuovi artisti nel raggiungimento dei loro obiettivi.",
+        text: "I dischi d'oro e di platino certificati sono il risultato di un lavoro di squadra tra artista, producer e fonico. Siamo orgogliosi di aver fatto parte di questi percorsi di successo e di continuare a supportare nuovi artisti nel raggiungimento dei loro obiettivi.",
       },
       {
         type: "h2",

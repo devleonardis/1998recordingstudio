@@ -1,34 +1,172 @@
 "use client";
 
-import Link from "next/link";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import { JourneyLink } from "./fx/journey-link";
+import { Magnetic } from "./fx/interactive";
 import { StudioLogo } from "./logo";
 
+const links = [
+  { href: "/studio-registrazione-bari", label: "Studio" },
+  { href: "/produzione-musicale", label: "Produzione" },
+  { href: "/mix-master", label: "Mix & Master" },
+  { href: "/blog", label: "Blog" },
+] as const;
+
+function isActive(pathname: string, href: string) {
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
+
+function MobileLinks({ pathname }: { pathname: string }) {
+  // transitions.dev "texts reveal": flip to .is-shown a frame after mount.
+  const [shown, setShown] = useState(false);
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setShown(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
+
+  return (
+    <nav aria-label="Menu mobile" className={`t-stagger flex flex-col gap-2 ${shown ? "is-shown" : ""}`}>
+      {[{ href: "/", label: "Home" }, ...links].map((link, i) => (
+        <JourneyLink
+          key={link.href}
+          href={link.href}
+          style={{ transitionDelay: `${180 + i * 60}ms` }}
+          className={`t-stagger-line flex items-baseline gap-4 border-b border-white/10 py-4 font-[var(--font-space)] text-4xl ${
+            pathname === link.href ? "text-accent" : "text-white"
+          }`}
+        >
+          <span className="font-mono text-xs text-muted">0{i + 1}</span>
+          {link.label}
+        </JourneyLink>
+      ))}
+    </nav>
+  );
+}
+
 export function Nav() {
+  const pathname = usePathname();
+  const [open, setOpen] = useState(false);
+  const [hovered, setHovered] = useState<string | null>(null);
+
+  useEffect(() => setOpen(false), [pathname]);
+
+  useEffect(() => {
+    if (!open) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previous;
+    };
+  }, [open]);
+
+  const highlight = hovered ?? links.find((l) => isActive(pathname, l.href))?.href ?? null;
+
   return (
     <>
       <motion.header
         initial={{ opacity: 0, y: -12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-        className="sticky top-0 z-30 border-b border-white/10 bg-bg/80 backdrop-blur-xl"
+        style={{ viewTransitionName: "site-header" }}
+        className="sticky top-0 z-50 border-b border-white/10 bg-bg/70 backdrop-blur-xl"
       >
-        <div className="mx-auto flex w-[min(1400px,calc(100%-3rem))] items-center justify-between py-4">
-          <Link href="/" aria-label="Home" className="accent-hover rounded-full p-1">
+        <div className="mx-auto flex w-[min(1400px,calc(100%-2rem))] items-center justify-between gap-4 py-3 sm:w-[min(1400px,calc(100%-3rem))] md:py-4">
+          <JourneyLink href="/" aria-label="Home" className="accent-hover flex items-center gap-3 rounded-full p-1">
             <StudioLogo />
-          </Link>
-          <nav className="flex items-center gap-2 md:gap-3">
+            <span className="hidden font-[var(--font-space)] text-sm tracking-[0.08em] text-text/90 lg:inline">
+              19.98 <span className="text-muted">Recording Studio</span>
+            </span>
+          </JourneyLink>
+
+          <nav
+            aria-label="Principale"
+            className="relative hidden items-center gap-1 rounded-full border border-white/10 bg-white/[0.03] p-1 md:flex"
+            onMouseLeave={() => setHovered(null)}
+          >
+            {links.map((link) => {
+              const active = isActive(pathname, link.href);
+              return (
+                <JourneyLink
+                  key={link.href}
+                  href={link.href}
+                  onMouseEnter={() => setHovered(link.href)}
+                  aria-current={active ? "page" : undefined}
+                  className={`relative rounded-full px-4 py-2 text-xs uppercase tracking-[0.14em] transition-colors hover:translate-y-0 ${
+                    active ? "text-white" : "text-muted hover:text-white"
+                  }`}
+                >
+                  {highlight === link.href ? (
+                    <motion.span
+                      layoutId="nav-pill"
+                      transition={{ type: "spring", stiffness: 380, damping: 32 }}
+                      className={`absolute inset-0 rounded-full ${
+                        active ? "bg-accent/20 ring-1 ring-accent/40" : "bg-white/[0.07]"
+                      }`}
+                    />
+                  ) : null}
+                  <span className="relative">{link.label}</span>
+                </JourneyLink>
+              );
+            })}
+          </nav>
+
+          <div className="flex items-center gap-2">
+            <Magnetic>
+              <a
+                href="https://wa.me/393883739941"
+                target="_blank"
+                rel="noreferrer"
+                className="accent-hover hidden rounded-full border border-accent bg-accent/10 px-4 py-2 text-xs uppercase tracking-[0.14em] text-accent md:inline-flex"
+              >
+                Whatsapp
+              </a>
+            </Magnetic>
+            <button
+              type="button"
+              onClick={() => setOpen((v) => !v)}
+              aria-expanded={open}
+              aria-label={open ? "Chiudi menu" : "Apri menu"}
+              className="relative flex h-11 w-11 items-center justify-center rounded-full border border-white/15 bg-white/[0.03] md:hidden"
+            >
+              <span
+                className={`absolute h-[1.5px] w-5 bg-text transition-transform duration-300 ${
+                  open ? "rotate-45" : "-translate-y-[4px]"
+                }`}
+              />
+              <span
+                className={`absolute h-[1.5px] w-5 bg-text transition-transform duration-300 ${
+                  open ? "-rotate-45" : "translate-y-[4px]"
+                }`}
+              />
+            </button>
+          </div>
+        </div>
+      </motion.header>
+
+      <AnimatePresence>
+        {open ? (
+          <motion.div
+            initial={{ clipPath: "circle(0% at calc(100% - 2.5rem) 2rem)" }}
+            animate={{ clipPath: "circle(150% at calc(100% - 2.5rem) 2rem)" }}
+            exit={{ clipPath: "circle(0% at calc(100% - 2.5rem) 2rem)" }}
+            transition={{ duration: 0.6, ease: [0.76, 0, 0.24, 1] }}
+            className="fixed inset-0 z-40 flex flex-col justify-between bg-[radial-gradient(circle_at_80%_10%,rgba(205,121,72,0.22),transparent_45%),#090c0f] px-6 pb-10 pt-28 md:hidden"
+          >
+            <MobileLinks pathname={pathname} />
             <a
               href="https://wa.me/393883739941"
               target="_blank"
               rel="noreferrer"
-              className="accent-hover hidden rounded-full border border-accent bg-accent/10 px-4 py-2 text-xs uppercase tracking-[0.14em] text-accent md:inline-flex md:text-sm"
+              className="rounded-full border border-accent bg-accent px-6 py-4 text-center text-sm font-medium uppercase tracking-[0.14em] text-[#140d09]"
             >
-              Whatsapp
+              Scrivici su WhatsApp
             </a>
-          </nav>
-        </div>
-      </motion.header>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
+
       <motion.a
         initial={{ opacity: 0, scale: 0.7 }}
         animate={{ opacity: 1, scale: 1 }}

@@ -1,5 +1,10 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { ViewTransition } from "react";
+import { JourneyLink } from "@/components/fx/journey-link";
+import { FxCard } from "@/components/fx/fx-card";
+import { Scene } from "@/components/fx/reveal";
+import { HorizontalTrack } from "@/components/fx/stack";
+import { NextTrack } from "@/components/next-track";
 
 export const metadata: Metadata = {
   title: "Mix e Master Professionale a Bari | 19.98 Studio",
@@ -80,17 +85,19 @@ export default function MixMasterPage() {
 
       <main className="pb-20 pt-5 md:pb-24 md:pt-10">
         {/* ── Hero ──────────────────────────────────────────────────────────── */}
-        <section className="mb-20 md:mb-24">
+        <section data-chapter="Intro" className="mb-20 md:mb-24">
           <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-xs uppercase tracking-[0.14em] text-[#B8ABA2]">
             Servizio · Mix &amp; Master
           </div>
 
-          <h1
-            className="mb-5 max-w-3xl text-3xl font-semibold leading-tight text-white sm:text-4xl md:text-5xl"
-            style={{ fontFamily: "var(--font-space)" }}
-          >
-            Mix e Master Professionale a Bari
-          </h1>
+          <ViewTransition name="svc-mix" share="morph">
+            <h1
+              className="mb-5 max-w-3xl text-3xl font-semibold leading-tight text-white sm:text-4xl md:text-5xl"
+              style={{ fontFamily: "var(--font-space)" }}
+            >
+              Mix e Master Professionale a Bari
+            </h1>
+          </ViewTransition>
 
           <p className="mb-8 max-w-2xl text-base leading-7 text-[#B8ABA2] md:text-lg">
             Dal mixdown finale al master pronto per Spotify: il 19.98 Recording Studio offre un
@@ -99,12 +106,12 @@ export default function MixMasterPage() {
           </p>
 
           <div className="flex flex-col gap-3 sm:flex-row">
-            <Link
+            <JourneyLink
               href="/#contatti"
               className="rounded-full border border-[#CD7948] bg-[#CD7948] px-6 py-3 text-sm font-medium uppercase tracking-[0.14em] text-[#140d09] text-center"
             >
               Contattaci
-            </Link>
+            </JourneyLink>
             <a
               href="https://wa.me/393883739941"
               target="_blank"
@@ -117,7 +124,7 @@ export default function MixMasterPage() {
         </section>
 
         {/* ── Cos'è il Mixing ───────────────────────────────────────────────── */}
-        <section className="mb-16 max-w-3xl md:mb-20">
+        <Scene chapter="Mixing" className="mb-16 max-w-3xl md:mb-20">
           <h2
             className="mb-4 text-2xl font-semibold text-white"
             style={{ fontFamily: "var(--font-space)" }}
@@ -137,10 +144,10 @@ export default function MixMasterPage() {
             strumenti di stereo image per costruire una coerenza sonora convincente. Il risultato è
             un mixdown stereo bilanciato, pronto per il passaggio al mastering.
           </p>
-        </section>
+        </Scene>
 
         {/* ── Cos'è il Mastering ────────────────────────────────────────────── */}
-        <section className="mb-16 max-w-3xl md:mb-20">
+        <Scene chapter="Mastering" className="mb-16 max-w-3xl md:mb-20">
           <h2
             className="mb-4 text-2xl font-semibold text-white"
             style={{ fontFamily: "var(--font-space)" }}
@@ -159,17 +166,17 @@ export default function MixMasterPage() {
             dinamica e il punch, assicurando che suoni forte e bilanciato in qualsiasi contesto di
             ascolto: dalle cuffie agli impianti da auto.
           </p>
-        </section>
+        </Scene>
 
         {/* ── Processo ──────────────────────────────────────────────────────── */}
-        <section className="mb-16 md:mb-20">
+        <Scene chapter="Processo" className="mb-16 md:mb-20">
           <h2
             className="mb-6 text-2xl font-semibold text-white"
             style={{ fontFamily: "var(--font-space)" }}
           >
             Il nostro processo di Mix &amp; Master
           </h2>
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <HorizontalTrack>
             {[
               {
                 step: "01",
@@ -202,17 +209,17 @@ export default function MixMasterPage() {
                 text: "Ricevi i file finali in WAV 24-bit e MP3 320 kbps, pronti per la distribuzione su qualsiasi piattaforma.",
               },
             ].map((item) => (
-              <div key={item.step} className="surface accent-hover rounded-2xl p-6">
+              <FxCard key={item.step} wrapperClassName="w-[78vw] shrink-0 sm:w-[380px]" className="surface accent-hover rounded-2xl p-6">
                 <span className="mb-3 block text-2xl font-bold text-[#CD7948]/40">{item.step}</span>
                 <h3 className="mb-2 font-semibold text-white">{item.title}</h3>
                 <p className="text-sm leading-6 text-[#B8ABA2]">{item.text}</p>
-              </div>
+              </FxCard>
             ))}
-          </div>
-        </section>
+          </HorizontalTrack>
+        </Scene>
 
         {/* ── A chi è rivolto ───────────────────────────────────────────────── */}
-        <section className="mb-16 max-w-3xl md:mb-20">
+        <Scene chapter="Per chi" className="mb-16 max-w-3xl md:mb-20">
           <h2
             className="mb-4 text-2xl font-semibold text-white"
             style={{ fontFamily: "var(--font-space)" }}
@@ -238,10 +245,10 @@ export default function MixMasterPage() {
               </li>
             ))}
           </ul>
-        </section>
+        </Scene>
 
         {/* ── Consegna e formati ────────────────────────────────────────────── */}
-        <section className="mb-16 md:mb-20">
+        <Scene chapter="Formati" className="mb-16 md:mb-20">
           <h2
             className="mb-6 text-2xl font-semibold text-white"
             style={{ fontFamily: "var(--font-space)" }}
@@ -263,16 +270,16 @@ export default function MixMasterPage() {
                 desc: "Loudness ottimizzato per Spotify (-14 LUFS), Apple Music e tutte le principali piattaforme di streaming.",
               },
             ].map((f) => (
-              <div key={f.format} className="surface accent-hover rounded-2xl p-6">
+              <FxCard key={f.format} className="surface accent-hover rounded-2xl p-6">
                 <h3 className="mb-2 font-semibold text-[#CD7948]">{f.format}</h3>
                 <p className="text-sm leading-6 text-[#B8ABA2]">{f.desc}</p>
-              </div>
+              </FxCard>
             ))}
           </div>
-        </section>
+        </Scene>
 
         {/* ── CTA ───────────────────────────────────────────────────────────── */}
-        <section className="rounded-2xl border border-[#CD7948]/20 bg-[#CD7948]/5 px-6 py-10 text-center md:px-12">
+        <Scene chapter="Inizia" className="rounded-2xl border border-[#CD7948]/20 bg-[#CD7948]/5 px-6 py-10 text-center md:px-12">
           <p className="mb-2 text-sm uppercase tracking-[0.14em] text-[#CD7948]">
             Mix &amp; Master · Bari
           </p>
@@ -287,12 +294,12 @@ export default function MixMasterPage() {
             revisioni incluse, file pronti per la distribuzione.
           </p>
           <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Link
+            <JourneyLink
               href="/#contatti"
               className="rounded-full border border-[#CD7948] bg-[#CD7948] px-6 py-3 text-sm font-medium uppercase tracking-[0.14em] text-[#140d09]"
             >
               Contattaci
-            </Link>
+            </JourneyLink>
             <a
               href="https://wa.me/393883739941"
               target="_blank"
@@ -302,7 +309,8 @@ export default function MixMasterPage() {
               Scrivici su WhatsApp
             </a>
           </div>
-        </section>
+        </Scene>
+        <NextTrack href="/blog" number="05" title="Il Blog" caption="Guide per artisti e producer" />
       </main>
     </>
   );

@@ -1,11 +1,17 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Space_Grotesk } from "next/font/google";
+import { Inter, JetBrains_Mono, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { Nav } from "@/components/nav";
 import { Footer } from "@/components/footer";
+import { SmoothScroll } from "@/components/fx/smooth-scroll";
+import { DawHud } from "@/components/fx/daw-hud";
+import { FluidTrail } from "@/components/fx/canvas";
+import { DevTools } from "@/components/fx/dev-tools";
+import { PageTransition } from "@/components/fx/page-transition";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-space" });
+const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono", weight: ["400", "500"] });
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.1998recordingstudio.it";
 
@@ -92,7 +98,7 @@ const localBusinessSchema = {
   name: "19.98 Recording Studio",
   alternateName: ["1998 Recording Studio Bari", "19.98 Studio"],
   description:
-    "Studio di registrazione professionale a Bari. Produzione musicale, recording, mix e master con risultati certificati. Dischi d'oro al merito.",
+    "Studio di registrazione professionale a Bari. Produzione musicale, recording, mix e master con risultati certificati. Dischi d'oro e di platino certificati.",
   url: SITE_URL,
   telephone: "+393883739941",
   email: "19.98recordingstudio@gmail.com",
@@ -165,11 +171,18 @@ const localBusinessSchema = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="it" className={`${inter.variable} ${spaceGrotesk.variable}`}>
+    <html lang="it" className={`${inter.variable} ${spaceGrotesk.variable} ${mono.variable}`}>
       <body>
+        <SmoothScroll />
+        <div aria-hidden className="grain" />
         <Nav />
-        {children}
+        {/* Every route change is a "journey": the old page is flown through,
+            the new one arrives out of depth (see globals.css). */}
+        <PageTransition>{children}</PageTransition>
         <Footer />
+        <DawHud />
+        <FluidTrail />
+        <DevTools />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}

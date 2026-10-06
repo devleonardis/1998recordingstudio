@@ -12,6 +12,9 @@ export default {
         text: "#E4E2DB",
         muted: "#B8ABA2",
       },
+      fontFamily: {
+        mono: ["var(--font-mono)", "ui-monospace", "monospace"],
+      },
       boxShadow: {
         glow: "0 0 0 1px rgba(205,121,72,0.25), 0 8px 40px rgba(205,121,72,0.15)",
       },

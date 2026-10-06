@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { ViewTransition } from "react";
+import { JourneyLink } from "@/components/fx/journey-link";
+import { TracingBeam } from "@/components/fx/tracing-beam";
+import { NextTrack } from "@/components/next-track";
 import { notFound } from "next/navigation";
 import { posts, getPost, type Section } from "../posts";
 import { BlogCta } from "./blog-cta";
@@ -97,6 +100,8 @@ export default async function BlogPostPage({
 
   if (!post) notFound();
 
+  const nextPost = posts[(posts.findIndex((p) => p.slug === post.slug) + 1) % posts.length];
+
   const schema = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
@@ -130,25 +135,27 @@ export default async function BlogPostPage({
           className="mb-8 flex items-center gap-2 text-sm text-[#B8ABA2]"
           aria-label="Breadcrumb"
         >
-          <Link href="/" className="hover:text-white">
+          <JourneyLink href="/" className="hover:text-white">
             Home
-          </Link>
+          </JourneyLink>
           <span className="text-[#CD7948]/60">/</span>
-          <Link href="/blog" className="hover:text-white">
+          <JourneyLink href="/blog" className="hover:text-white">
             Blog
-          </Link>
+          </JourneyLink>
           <span className="text-[#CD7948]/60">/</span>
           <span className="truncate text-[#E4E2DB]">{post.title}</span>
         </nav>
 
         {/* Article header */}
-        <header className="mb-10 max-w-3xl">
-          <h1
-            className="mb-5 text-3xl font-semibold leading-tight text-white sm:text-4xl md:text-5xl"
-            style={{ fontFamily: "var(--font-space)" }}
-          >
-            {post.title}
-          </h1>
+        <header data-chapter="Titolo" className="mb-10 max-w-3xl">
+          <ViewTransition name={`post-${post.slug}`} share="morph">
+            <h1
+              className="mb-5 text-3xl font-semibold leading-tight text-white sm:text-4xl md:text-5xl"
+              style={{ fontFamily: "var(--font-space)" }}
+            >
+              {post.title}
+            </h1>
+          </ViewTransition>
           <div className="flex items-center gap-4 text-sm text-[#B8ABA2]">
             <time dateTime={post.date}>{formatDate(post.date)}</time>
             <span className="text-[#CD7948]/60">·</span>
@@ -157,15 +164,17 @@ export default async function BlogPostPage({
         </header>
 
         {/* Article body */}
-        <article className="max-w-3xl">
-          {post.sections.map((section, i) => (
-            <RenderSection key={i} section={section} />
-          ))}
-        </article>
+        <TracingBeam className="max-w-3xl">
+          <article data-chapter="Lettura">
+            {post.sections.map((section, i) => (
+              <RenderSection key={i} section={section} />
+            ))}
+          </article>
+        </TracingBeam>
 
         {/* Back link */}
         <div className="mt-14 max-w-3xl">
-          <Link
+          <JourneyLink
             href="/blog"
             className="inline-flex items-center gap-2 text-sm text-[#B8ABA2] hover:text-white"
           >
@@ -184,8 +193,17 @@ export default async function BlogPostPage({
               <path d="M19 12H5M12 19l-7-7 7-7" />
             </svg>
             Torna al Blog
-          </Link>
+          </JourneyLink>
         </div>
+
+        {nextPost.slug !== post.slug ? (
+          <NextTrack
+            href={`/blog/${nextPost.slug}`}
+            number="05"
+            title={nextPost.title.split(":")[0]}
+            caption={`${nextPost.readingTime} di lettura`}
+          />
+        ) : null}
       </main>
     </>
   );
