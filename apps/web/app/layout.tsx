@@ -5,7 +5,7 @@ import { Nav } from "@/components/nav";
 import { Footer } from "@/components/footer";
 import { SmoothScroll } from "@/components/fx/smooth-scroll";
 import { DawHud } from "@/components/fx/daw-hud";
-import { FluidTrail } from "@/components/fx/canvas";
+import { DiscCursor } from "@/components/fx/disc-cursor";
 import { DevTools } from "@/components/fx/dev-tools";
 import { PageTransition } from "@/components/fx/page-transition";
 
@@ -181,7 +181,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <PageTransition>{children}</PageTransition>
         <Footer />
         <DawHud />
-        <FluidTrail />
+        <DiscCursor />
         <DevTools />
         <script
           type="application/ld+json"

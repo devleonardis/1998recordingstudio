@@ -438,3 +438,30 @@ main {
 @media (prefers-reduced-motion: reduce) {
   .eq-bar { animation: none; transform: scaleY(0.5); }
 }
+
+/* Vinyl disc cursor (replaces the native pointer on desktop) */
+html.has-disc-cursor,
+html.has-disc-cursor * {
+  cursor: none !important;
+}
+
+html.has-disc-cursor input,
+html.has-disc-cursor textarea {
+  cursor: text !important;
+}
+
+.disc-cursor {
+  background:
+    radial-gradient(circle, #0c1013 0 6%, #cd7948 6.5% 26%, #1a1410 26.5% 29%, transparent 29.5%),
+    conic-gradient(from 0deg, rgba(255, 255, 255, 0.18), transparent 18%, transparent 50%, rgba(255, 255, 255, 0.14) 60%, transparent 75%),
+    repeating-radial-gradient(circle, #0d0d0f 0 1px, #1c1c21 1px 2px);
+  animation: spin 2.4s linear infinite;
+}
+
+.disc-cursor-fast {
+  animation-duration: 0.7s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .disc-cursor { animation: none; }
+}
