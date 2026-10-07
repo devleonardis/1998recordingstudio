@@ -14,29 +14,37 @@ function depth(path: string) {
 }
 
 /**
+ * Page snapshots are taller than the viewport: zoom the journey around what
+ * the visitor is actually looking at, not the middle of the document.
+ */
+export function prepareJourney() {
+  const shell = document.querySelector<HTMLElement>(".page-shell");
+  if (!shell) return;
+  const top = shell.getBoundingClientRect().top + window.scrollY;
+  const root = document.documentElement.style;
+  root.setProperty("--vt-old-oy", `${window.scrollY + window.innerHeight / 2 - top}px`);
+  root.setProperty("--vt-new-oy", `${window.innerHeight / 2 - top}px`);
+}
+
+/** Direction of a navigation between two paths, for the page transition. */
+export function journeyType(from: string, to: string) {
+  return depth(to) < depth(from) ? "nav-back" : "nav-forward";
+}
+
+/**
  * next/link that tags the navigation with a direction, so the page
  * transition flies forward (deeper into the site) or back toward home.
  */
 export function JourneyLink({ href, onClick, ...props }: ComponentProps<typeof Link> & { href: string }) {
   const pathname = usePathname();
-  const from = depth(pathname);
-  const to = depth(href);
-  const type = to < from ? "nav-back" : "nav-forward";
+  const type = journeyType(pathname, href);
 
   return (
     <Link
       href={href}
       transitionTypes={[type]}
       onClick={(event) => {
-        // Page snapshots are taller than the viewport: zoom around what the
-        // visitor is actually looking at, not the middle of the document.
-        const shell = document.querySelector<HTMLElement>(".page-shell");
-        if (shell) {
-          const top = shell.getBoundingClientRect().top + window.scrollY;
-          const root = document.documentElement.style;
-          root.setProperty("--vt-old-oy", `${window.scrollY + window.innerHeight / 2 - top}px`);
-          root.setProperty("--vt-new-oy", `${window.innerHeight / 2 - top}px`);
-        }
+        prepareJourney();
         onClick?.(event);
       }}
       {...props}

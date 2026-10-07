@@ -129,7 +129,12 @@ export default function BlogPage() {
         </div>
       </div>
 
-      <NextTrack href="/" number="01" title="Torna a casa" caption="19.98 Recording Studio · Bari" />
+      <NextTrack
+        href={`/blog/${posts[0].slug}`}
+        number="B1"
+        title={posts[0].title.split(":")[0]}
+        caption="Bonus track"
+      />
     </main>
   );
 }

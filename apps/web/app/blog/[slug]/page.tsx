@@ -100,7 +100,9 @@ export default async function BlogPostPage({
 
   if (!post) notFound();
 
-  const nextPost = posts[(posts.findIndex((p) => p.slug === post.slug) + 1) % posts.length];
+  // Bonus tracks play in order; after the last one the record starts over.
+  const position = posts.findIndex((p) => p.slug === post.slug);
+  const nextPost = posts[position + 1];
 
   const schema = {
     "@context": "https://schema.org",
@@ -196,14 +198,16 @@ export default async function BlogPostPage({
           </JourneyLink>
         </div>
 
-        {nextPost.slug !== post.slug ? (
+        {nextPost ? (
           <NextTrack
             href={`/blog/${nextPost.slug}`}
-            number="05"
+            number={`B${position + 2}`}
             title={nextPost.title.split(":")[0]}
-            caption={`${nextPost.readingTime} di lettura`}
+            caption={`Bonus track · ${nextPost.readingTime} di lettura`}
           />
-        ) : null}
+        ) : (
+          <NextTrack href="/" number="01" title="Intro" caption="Fine del disco · ricomincia" />
+        )}
       </main>
     </>
   );

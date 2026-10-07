@@ -4,7 +4,8 @@ import "./globals.css";
 import { Nav } from "@/components/nav";
 import { Footer } from "@/components/footer";
 import { SmoothScroll } from "@/components/fx/smooth-scroll";
-import { DawHud } from "@/components/fx/daw-hud";
+import { RecordPlayer } from "@/components/fx/record-player";
+import { posts } from "@/app/blog/posts";
 import { DiscCursor } from "@/components/fx/disc-cursor";
 import { DevTools } from "@/components/fx/dev-tools";
 import { PageTransition } from "@/components/fx/page-transition";
@@ -180,7 +181,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             the new one arrives out of depth (see globals.css). */}
         <PageTransition>{children}</PageTransition>
         <Footer />
-        <DawHud />
+        <RecordPlayer bonus={posts.map(({ slug, title, readingTime }) => ({ slug, title, readingTime }))} />
         <DiscCursor />
         <DevTools />
         <script

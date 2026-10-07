@@ -532,12 +532,12 @@ html.has-disc-cursor textarea {
   }
 }
 
-/* Playhead: scroll progress of the whole page, zero JS where supported */
-.playhead {
+/* Player progress: scroll progress of the whole page, zero JS where supported */
+.player-fill {
   transform: scaleX(0);
 }
 @supports (animation-timeline: scroll()) {
-  .playhead {
+  .player-fill {
     animation: playhead linear both;
     animation-timeline: scroll(root);
   }
@@ -597,5 +597,77 @@ html.has-disc-cursor textarea {
   }
   .tilt[data-active] {
     transform: none;
+  }
+}
+
+/* ─── Record player ────────────────────────────────────────────────────────── */
+
+body {
+  padding-bottom: 92px;
+}
+
+.player-vinyl {
+  animation-duration: 3.2s;
+  animation-play-state: paused;
+}
+.record-player[data-spinning] .player-vinyl {
+  animation-play-state: running;
+}
+
+/* Pull-to-next ring around the "next" button */
+.pull-ring circle {
+  stroke-dasharray: 100;
+  stroke-dashoffset: calc((1 - var(--pull, 0)) * 100);
+  color: #cd7948;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.record-player[data-pulling] .pull-ring circle {
+  opacity: 1;
+}
+.record-player[data-at-end] .next-btn {
+  color: #cd7948;
+  animation: next-pulse 1.4s ease-in-out infinite;
+}
+@keyframes next-pulse {
+  50% { box-shadow: 0 0 0 6px rgba(205, 121, 72, 0.18); }
+}
+
+.pull-hint .hint-end {
+  display: none;
+  color: #cd7948;
+}
+.record-player[data-at-end] .pull-hint .hint-default {
+  display: none;
+}
+.record-player[data-at-end] .pull-hint .hint-end {
+  display: inline;
+}
+
+.tracklist {
+  animation: intro-in 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Mini "now playing" equalizer */
+.eq-mini {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 12px;
+}
+.eq-mini i {
+  width: 3px;
+  height: 100%;
+  background: #cd7948;
+  transform-origin: bottom;
+  animation: eq 0.9s ease-in-out infinite alternate;
+}
+.eq-mini i:nth-child(2) { animation-delay: -0.3s; }
+.eq-mini i:nth-child(3) { animation-delay: -0.6s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .record-player[data-at-end] .next-btn,
+  .eq-mini i {
+    animation: none;
   }
 }
