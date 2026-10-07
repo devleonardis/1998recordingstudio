@@ -40,13 +40,18 @@ export function DiscCursor() {
       el.dataset.visible = "";
       if (!frame) frame = requestAnimationFrame(paint);
     };
+    const onLeave = () => {
+      delete el.dataset.visible;
+    };
     const onOver = (e: PointerEvent) => {
+      // Events stop at an iframe's edge (e.g. the booking embed): hide the
+      // disc there instead of leaving it frozen; the next move outside shows it.
+      if ((e.target as Element | null)?.tagName === "IFRAME") return onLeave();
       const hit = (e.target as Element | null)?.closest?.(INTERACTIVE);
       el.toggleAttribute("data-hover", Boolean(hit));
     };
     const onDown = () => el.toggleAttribute("data-pressed", true);
     const onUp = () => el.toggleAttribute("data-pressed", false);
-    const onLeave = () => delete el.dataset.visible;
 
     window.addEventListener("pointermove", onMove, { passive: true });
     window.addEventListener("pointerover", onOver, { passive: true });

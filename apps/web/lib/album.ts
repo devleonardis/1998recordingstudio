@@ -20,6 +20,7 @@ export const MAIN_TRACKS: Track[] = [
   { no: "03", title: "Produzione", href: "/produzione-musicale", duration: 185 },
   { no: "04", title: "Mix & Master", href: "/mix-master", duration: 178 },
   { no: "05", title: "Il Blog", href: "/blog", duration: 151 },
+  { no: "06", title: "Prenota", href: "/prenota", duration: 120 },
 ];
 
 export function buildAlbum(bonus: BonusSource[]): Track[] {

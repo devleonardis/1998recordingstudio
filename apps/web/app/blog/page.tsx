@@ -113,10 +113,10 @@ export default function BlogPage() {
         </p>
         <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
           <JourneyLink
-            href="/#contatti"
+            href="/prenota"
             className="rounded-full border border-[#CD7948] bg-[#CD7948] px-6 py-3 text-sm font-medium uppercase tracking-[0.14em] text-[#140d09]"
           >
-            Contattaci
+            Prenota
           </JourneyLink>
           <a
             href="https://wa.me/393883739941"

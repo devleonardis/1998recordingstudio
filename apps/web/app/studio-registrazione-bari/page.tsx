@@ -42,7 +42,7 @@ const faqSchema = {
       name: "Come si prenota una sessione al 19.98 Studio?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Puoi prenotare direttamente online tramite il form di prenotazione sul nostro sito, oppure contattarci via WhatsApp al +39 388 3739941 o via email a 19.98recordingstudio@gmail.com. Risponderemo entro 24 ore per confermare la disponibilità.",
+        text: "Puoi prenotare direttamente online dalla pagina Prenota del sito: scegli il servizio, il giorno e l'orario tra gli slot liberi e invia la richiesta: ti arriva una email appena confermiamo la sessione. Per dubbi puoi contattarci via WhatsApp al +39 388 3739941 o via email a 19.98recordingstudio@gmail.com.",
       },
     },
     {
@@ -120,10 +120,10 @@ export default function StudioRegistrazioneBariPage() {
 
           <div className="flex flex-col gap-3 sm:flex-row">
             <JourneyLink
-              href="/#contatti"
+              href="/prenota?servizio=recording"
               className="rounded-full border border-[#CD7948] bg-[#CD7948] px-6 py-3 text-sm font-medium uppercase tracking-[0.14em] text-[#140d09] text-center"
             >
-              Contattaci
+              Prenota
             </JourneyLink>
             <a
               href="https://wa.me/393883739941"
@@ -318,7 +318,7 @@ export default function StudioRegistrazioneBariPage() {
               },
               {
                 q: "Come si prenota una sessione al 19.98 Studio?",
-                a: "Puoi prenotare direttamente online tramite il form sul sito, scrivere su WhatsApp al +39 388 3739941 o inviare un'email. Ti risponderemo entro 24 ore per confermare disponibilità e dettagli della sessione.",
+                a: "Puoi prenotare direttamente online dalla pagina Prenota: scegli servizio, giorno e orario tra gli slot liberi e invia la richiesta: ti arriva una email appena confermiamo la sessione. Per qualsiasi dubbio scrivici su WhatsApp al +39 388 3739941 o via email.",
               },
               {
                 q: "Quali generi musicali registrate al 19.98 Studio di Bari?",
@@ -354,10 +354,10 @@ export default function StudioRegistrazioneBariPage() {
           </p>
           <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
             <JourneyLink
-              href="/#contatti"
+              href="/prenota?servizio=recording"
               className="rounded-full border border-[#CD7948] bg-[#CD7948] px-6 py-3 text-sm font-medium uppercase tracking-[0.14em] text-[#140d09]"
             >
-              Contattaci
+              Prenota
             </JourneyLink>
             <a
               href="https://wa.me/393883739941"

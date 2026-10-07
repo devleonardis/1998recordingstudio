@@ -236,14 +236,13 @@ export function SleeveMenu({ open, onClose }: { open: boolean; onClose: () => vo
 
       {/* Liner notes */}
       <div className="relative z-10 grid gap-3 px-5 pb-8 sm:grid-cols-[auto_1fr] sm:items-end sm:gap-8 sm:px-8 sm:pb-10">
-        <a
-          href="https://wa.me/393883739941"
-          target="_blank"
-          rel="noreferrer"
+        <JourneyLink
+          href="/prenota"
+          onClick={onClose}
           className="sleeve-foot inline-flex items-center justify-center gap-3 rounded-full bg-accent px-7 py-4 text-sm font-medium uppercase tracking-[0.14em] text-[#140d09] hover:translate-y-0 hover:bg-[#e08b58]"
         >
-          Prenota su WhatsApp
-        </a>
+          Prenota una sessione
+        </JourneyLink>
         <div className="sleeve-foot grid grid-cols-2 gap-x-6 gap-y-1 font-mono text-[11px] uppercase tracking-[0.14em] text-muted sm:text-right md:max-w-[62%]">
           <span>Via Minervini 25, Bari</span>
           <span>Lun–Sab 10–20</span>

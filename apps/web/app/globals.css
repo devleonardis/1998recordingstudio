@@ -694,3 +694,21 @@ body {
     animation: none;
   }
 }
+
+/* Booking slots: each time chip drops in like a needle on the groove */
+.slot-grid > li {
+  animation: slot-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes slot-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.97);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slot-grid > li {
+    animation: none;
+  }
+}

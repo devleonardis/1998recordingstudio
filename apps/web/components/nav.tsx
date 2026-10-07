@@ -88,6 +88,14 @@ export function Nav() {
 
           <div className="flex items-center gap-2">
             <Magnetic>
+              <JourneyLink
+                href="/prenota"
+                className="accent-hover hidden rounded-full border border-accent bg-accent px-4 py-2 text-xs font-medium uppercase tracking-[0.14em] text-[#140d09] hover:translate-y-0 md:inline-flex"
+              >
+                Prenota
+              </JourneyLink>
+            </Magnetic>
+            <Magnetic>
               <a
                 href="https://wa.me/393883739941"
                 target="_blank"
