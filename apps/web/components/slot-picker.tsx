@@ -9,18 +9,40 @@ const TIME_ZONE = "Europe/Rome";
 const WINDOW_DAYS = 42;
 const WEEKDAYS = ["Dom", "Lun", "Mar", "Mer", "Gio", "Ven", "Sab"];
 const MONTHS = ["gen", "feb", "mar", "apr", "mag", "giu", "lug", "ago", "set", "ott", "nov", "dic"];
+/**
+ * The studio works past midnight (09:00–01:00): starts before this time
+ * belong to the previous night, so the day view runs 09:00 → 00:xx.
+ */
+const NIGHT_ENDS = "06:00";
 
 /** A start time as Cal.com returns it, e.g. "2026-10-09T15:00:00.000+02:00". */
 type SlotStart = string;
 type FreeSlots = Record<string, SlotStart[]>;
 type Status = "loading" | "ready" | "error";
 
-export type PickedSlot = { date: string; start: SlotStart };
+export type PickedSlot = { start: SlotStart };
 
 const cache = new Map<string, Promise<FreeSlots>>();
 
-function todayInRome() {
-  return new Intl.DateTimeFormat("en-CA", { timeZone: TIME_ZONE }).format(new Date());
+/** Current Rome wall-clock time as "YYYY-MM-DD HH:MM". */
+function nowInRome() {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: TIME_ZONE,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  }).formatToParts(new Date());
+  const get = (type: string) => parts.find((p) => p.type === type)?.value ?? "";
+  return `${get("year")}-${get("month")}-${get("day")} ${get("hour")}:${get("minute")}`;
+}
+
+/** The studio day we're in: after midnight it's still last night's session. */
+function studioToday() {
+  const [date, time] = nowInRome().split(" ");
+  return time < NIGHT_ENDS ? addDays(date, -1) : date;
 }
 
 function addDays(date: string, days: number) {
@@ -34,6 +56,10 @@ function weekday(date: string) {
 }
 
 const hhmm = (start: SlotStart) => start.slice(11, 16);
+
+/** Late-night starts sort after the evening ones. */
+const studioSortKey = (time: string) => (time < NIGHT_ENDS ? `1${time}` : `0${time}`);
+const byStudioTime = (a: string, b: string) => studioSortKey(a).localeCompare(studioSortKey(b));
 
 function endTime(time: string, minutes: number) {
   const total = Number(time.slice(0, 2)) * 60 + Number(time.slice(3)) + minutes;
@@ -49,16 +75,25 @@ function loadFreeSlots(slug: string, from: string): Promise<FreeSlots> {
       eventTypeSlug: slug,
       username: CAL_USERNAME,
       start: from,
-      end: addDays(from, WINDOW_DAYS - 1),
+      // One extra calendar day for the last night's after-midnight slots.
+      end: addDays(from, WINDOW_DAYS),
       timeZone: TIME_ZONE,
     });
     request = fetch(`https://api.cal.com/v2/slots?${params}`, {
       headers: { "cal-api-version": "2024-09-04" },
     })
       .then((res) => (res.ok ? res.json() : Promise.reject(new Error(String(res.status)))))
-      .then((body: { data: Record<string, { start: SlotStart }[]> }) =>
-        Object.fromEntries(Object.entries(body.data).map(([day, slots]) => [day, slots.map((s) => s.start)])),
-      );
+      .then((body: { data: Record<string, { start: SlotStart }[]> }) => {
+        // Re-key by studio day: a 00:00 start on the 9th is the night of the 8th.
+        const byDay: FreeSlots = {};
+        for (const [date, slots] of Object.entries(body.data)) {
+          for (const { start } of slots) {
+            const day = hhmm(start) < NIGHT_ENDS ? addDays(date, -1) : date;
+            (byDay[day] ??= []).push(start);
+          }
+        }
+        return byDay;
+      });
     request.catch(() => cache.delete(key));
     cache.set(key, request);
   }
@@ -75,7 +110,7 @@ function weeklyGrid(free: FreeSlots) {
   for (const [day, starts] of Object.entries(free)) {
     for (const start of starts) grid[weekday(day)].add(hhmm(start));
   }
-  return grid.map((times) => [...times].sort());
+  return grid.map((times) => [...times].sort(byStudioTime));
 }
 
 export function invalidateSlots() {
@@ -91,7 +126,7 @@ export function SlotPicker({
   onPick: (slot: PickedSlot) => void;
   refreshKey?: number;
 }) {
-  const today = useMemo(todayInRome, []);
+  const today = useMemo(studioToday, []);
   const [status, setStatus] = useState<Status>("loading");
   const [free, setFree] = useState<FreeSlots>({});
   const [weekStart, setWeekStart] = useState(today);
@@ -115,12 +150,12 @@ export function SlotPicker({
 
   const grid = useMemo(() => weeklyGrid(free), [free]);
 
-  /** Every slot of a day, free or booked; past times today are dropped. */
+  /** Every slot of a studio day, free or booked; times already gone are dropped. */
   const slotsFor = (date: string) => {
     const freeTimes = new Map((free[date] ?? []).map((start) => [hhmm(start), start]));
-    const nowTime = date === today ? new Intl.DateTimeFormat("it-IT", { timeZone: TIME_ZONE, hour: "2-digit", minute: "2-digit" }).format(new Date()) : "";
+    const now = nowInRome();
     return grid[weekday(date)]
-      .filter((time) => time > nowTime)
+      .filter((time) => `${time < NIGHT_ENDS ? addDays(date, 1) : date} ${time}` > now)
       .map((time) => ({ time, start: freeTimes.get(time) }));
   };
 
@@ -222,7 +257,7 @@ export function SlotPicker({
                 {start ? (
                   <button
                     type="button"
-                    onClick={() => onPick({ date: day, start })}
+                    onClick={() => onPick({ start })}
                     className="group flex w-full items-center gap-2.5 rounded-xl border border-white/10 bg-white/[0.03] px-3 py-3 text-left text-sm transition-colors hover:translate-y-0 hover:border-accent hover:bg-accent/10"
                   >
                     <span aria-hidden className="h-2 w-2 shrink-0 rounded-full bg-accent shadow-[0_0_10px_rgba(205,121,72,0.8)]" />

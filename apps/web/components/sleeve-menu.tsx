@@ -245,7 +245,7 @@ export function SleeveMenu({ open, onClose }: { open: boolean; onClose: () => vo
         </JourneyLink>
         <div className="sleeve-foot grid grid-cols-2 gap-x-6 gap-y-1 font-mono text-[11px] uppercase tracking-[0.14em] text-muted sm:text-right md:max-w-[62%]">
           <span>Via Minervini 25, Bari</span>
-          <span>Lun–Sab 10–20</span>
+          <span>Tutti i giorni 9–01</span>
           <a href="mailto:19.98recordingstudio@gmail.com" className="col-span-2 normal-case tracking-normal hover:text-accent">
             19.98recordingstudio@gmail.com
           </a>

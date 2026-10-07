@@ -204,7 +204,7 @@ export function HomeContent() {
       </Scene>
 
       <Scene id="contatti" chapter="Contatti" className="pb-4 pt-10 md:pb-8 md:pt-14">
-        <div className="surface overflow-hidden rounded-2xl border-white/12 px-5 py-7 sm:rounded-[2rem] sm:px-6 sm:py-8 md:px-10 md:py-10">
+        <div className="surface overflow-hidden rounded-2xl border-white/[0.12] px-5 py-7 sm:rounded-[2rem] sm:px-6 sm:py-8 md:px-10 md:py-10">
           <Reveal>
             <p className="font-mono text-xs uppercase tracking-[0.28em] text-accent">Contatti</p>
             <h2 className="mt-3 font-[var(--font-space)] text-[1.875rem] sm:text-4xl md:text-5xl">

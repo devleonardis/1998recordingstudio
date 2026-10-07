@@ -89,3 +89,10 @@ export function findBookingSelection(param: string | undefined): BookingSelectio
   const service = BOOKING_SERVICES.find((s) => s.id === param) ?? BOOKING_SERVICES[0];
   return { service, option: service.options[0] };
 }
+
+export type PaymentMode = "online" | "studio";
+
+/** Every service also exists on Cal.com as `<slug>-studio`, paid at the studio. */
+export function eventSlug(option: BookingOption, mode: PaymentMode) {
+  return mode === "studio" ? `${option.slug}-studio` : option.slug;
+}

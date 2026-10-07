@@ -294,9 +294,9 @@ export default function StudioRegistrazioneBariPage() {
             <div className="surface rounded-2xl p-5">
               <p className="mb-1 text-xs uppercase tracking-[0.14em] text-[#CD7948]">Orari</p>
               <p className="text-sm leading-6 text-[#E4E2DB]">
-                Lun – Sab
+                Tutti i giorni
                 <br />
-                10:00 – 20:00
+                09:00 – 01:00
               </p>
             </div>
           </div>
