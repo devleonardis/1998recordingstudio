@@ -80,11 +80,8 @@ export function Nav() {
         className="intro-in sticky top-0 z-50 border-b border-white/10 bg-bg/90 backdrop-blur-md"
       >
         <div className="mx-auto flex w-[min(1400px,calc(100%-2rem))] items-center justify-between gap-4 py-3 sm:w-[min(1400px,calc(100%-3rem))] md:py-4">
-          <JourneyLink href="/" aria-label="Home" className="accent-hover flex items-center gap-3 rounded-full p-1">
+          <JourneyLink href="/" aria-label="19.98 Recording Studio · Home" className="accent-hover flex items-center rounded-full p-1">
             <StudioLogo />
-            <span className="hidden font-[var(--font-space)] text-sm tracking-[0.08em] text-text/90 lg:inline">
-              19.98 <span className="text-muted">Recording Studio</span>
-            </span>
           </JourneyLink>
 
           <PillNav pathname={pathname} />
