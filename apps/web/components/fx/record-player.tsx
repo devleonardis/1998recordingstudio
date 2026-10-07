@@ -5,6 +5,7 @@ import { CSSProperties, PointerEvent as ReactPointerEvent, useEffect, useMemo, u
 import { ALBUM_ARTIST, ALBUM_TITLE, BonusSource, Track, buildAlbum, formatTime } from "@/lib/album";
 import { JourneyLink, journeyType, prepareJourney } from "./journey-link";
 import { getLenis } from "./smooth-scroll";
+import { gsap, prefersReducedMotion } from "@/lib/gsap";
 
 type Chapter = { label: string; el: HTMLElement; at: number };
 
@@ -45,6 +46,7 @@ export function RecordPlayer({ bonus }: { bonus: BonusSource[] }) {
   const rootRef = useRef<HTMLDivElement>(null);
   const timeRef = useRef<HTMLSpanElement>(null);
   const fillRef = useRef<HTMLDivElement>(null);
+  const titleRef = useRef<HTMLSpanElement>(null);
   const [playing, setPlaying] = useState(false);
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [active, setActive] = useState(0);
@@ -224,6 +226,24 @@ export function RecordPlayer({ bonus }: { bonus: BonusSource[] }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
+  // New track: the title "decodes" into place like a display finding the tag.
+  useEffect(() => {
+    const el = titleRef.current;
+    if (!el) return;
+    if (prefersReducedMotion() || !el.textContent) {
+      el.textContent = track.title;
+      return;
+    }
+    const tween = gsap.to(el, {
+      duration: 1,
+      ease: "none",
+      scrambleText: { text: track.title, chars: "01923456789#·/", speed: 0.6, revealDelay: 0.2 },
+    });
+    return () => {
+      tween.kill();
+    };
+  }, [track.title]);
+
   useEffect(() => setListOpen(false), [pathname]);
 
   useEffect(() => {
@@ -324,7 +344,7 @@ export function RecordPlayer({ bonus }: { bonus: BonusSource[] }) {
             <div aria-hidden className="player-vinyl vinyl relative h-11 w-11 shrink-0 rounded-full shadow-[0_0_0_1px_rgba(228,226,219,0.18)] sm:h-12 sm:w-12" />
             <div className="min-w-0">
               <p className="truncate text-sm font-medium text-white">
-                <span className="font-mono text-xs text-accent">{track.no}</span> · {track.title}
+                <span className="font-mono text-xs text-accent">{track.no}</span> · <span ref={titleRef} />
               </p>
               <p className="truncate text-xs text-muted">
                 {chapter ? (

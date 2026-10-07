@@ -1,77 +1,60 @@
 "use client";
 
-import {
-  MotionValue,
-  motion,
-  useReducedMotion,
-  useScroll,
-  useTransform,
-} from "framer-motion";
-import { ReactNode, useEffect, useRef, useState } from "react";
+import { ReactNode, useRef } from "react";
+import { ScrollTrigger, gsap, prefersReducedMotion, useGSAP } from "@/lib/gsap";
 
 /**
  * Sticky deck: each card pins under the header and the next one slides
- * over it, while the cards underneath sink back and dim.
+ * over it, while the cards underneath sink back and dim. One ScrollTrigger
+ * drives every card.
  */
 export function StackCards({ items }: { items: ReactNode[] }) {
   const ref = useRef<HTMLDivElement>(null);
-  const reduce = useReducedMotion();
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
 
-  if (reduce) {
-    return (
-      <div ref={ref} className="grid gap-4">
-        {items.map((item, i) => (
-          <div key={i}>{item}</div>
-        ))}
-      </div>
-    );
-  }
+  useGSAP(
+    () => {
+      if (prefersReducedMotion() || !ref.current) return;
+      const cards = gsap.utils.toArray<HTMLElement>(".stack-card", ref.current);
+      const dims = gsap.utils.toArray<HTMLElement>(".stack-dim", ref.current);
+      const total = cards.length;
+      const setters = cards.map((card) => gsap.quickSetter(card, "css"));
+
+      ScrollTrigger.create({
+        trigger: ref.current,
+        start: "top top",
+        end: "bottom bottom",
+        onUpdate: ({ progress }) => {
+          cards.forEach((_, i) => {
+            const start = i / total;
+            const depth = total - i - 1;
+            const t = gsap.utils.clamp(0, 1, (progress - start) / (1 - start || 1));
+            setters[i]({
+              scale: 1 - depth * 0.045 * t,
+              rotateX: depth * -2.5 * t,
+              transformPerspective: 1200,
+            });
+            dims[i].style.opacity = String(depth * 0.16 * t);
+          });
+        },
+      });
+    },
+    { scope: ref },
+  );
 
   return (
     <div ref={ref} className="relative">
       {items.map((item, i) => (
-        <StackItem key={i} index={i} total={items.length} progress={scrollYProgress}>
-          {item}
-        </StackItem>
+        <div
+          key={i}
+          className={`sticky flex items-start justify-center ${i === items.length - 1 ? "pb-10" : "h-[78vh] md:h-[86vh]"}`}
+          style={{ top: `calc(96px + ${i * 22}px)` }}
+        >
+          <div className="stack-card relative w-full origin-top">
+            {item}
+            <div aria-hidden className="stack-dim pointer-events-none absolute inset-0 rounded-[2rem] bg-black opacity-0" />
+          </div>
+        </div>
       ))}
-    </div>
-  );
-}
-
-function StackItem({
-  children,
-  index,
-  total,
-  progress,
-}: {
-  children: ReactNode;
-  index: number;
-  total: number;
-  progress: MotionValue<number>;
-}) {
-  const start = index / total;
-  const targetScale = 1 - (total - index - 1) * 0.045;
-  const scale = useTransform(progress, [start, 1], [1, targetScale]);
-  const dim = useTransform(progress, [start, 1], [0, (total - index - 1) * 0.16]);
-  const rotateX = useTransform(progress, [start, 1], [0, (total - index - 1) * -2.5]);
-
-  return (
-    <div
-      className={`sticky flex items-start justify-center ${index === total - 1 ? "pb-10" : "h-[78vh] md:h-[86vh]"}`}
-      style={{ top: `calc(96px + ${index * 22}px)` }}
-    >
-      <motion.div
-        style={{ scale, rotateX, transformOrigin: "50% 0%", transformPerspective: 1200 }}
-        className="relative w-full"
-      >
-        {children}
-        <motion.div
-          aria-hidden
-          style={{ opacity: dim }}
-          className="pointer-events-none absolute inset-0 rounded-[inherit] bg-black"
-        />
-      </motion.div>
     </div>
   );
 }
@@ -80,62 +63,59 @@ function StackItem({
  * Pinned horizontal track: vertical scroll drives the cards sideways,
  * like scrubbing a DAW arrangement left to right.
  */
-export function HorizontalTrack({
-  children,
-  label,
-}: {
-  children: ReactNode;
-  label?: ReactNode;
-}) {
+export function HorizontalTrack({ children, label }: { children: ReactNode; label?: ReactNode }) {
   const sectionRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
-  const reduce = useReducedMotion();
-  const [distance, setDistance] = useState(0);
-  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start start", "end end"] });
-  const x = useTransform(scrollYProgress, [0.04, 0.96], [0, -distance]);
-  const bar = useTransform(scrollYProgress, [0.04, 0.96], [0, 1]);
+  const barRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const track = trackRef.current;
-    if (!track) return;
-    const measure = () => setDistance(Math.max(0, track.scrollWidth - window.innerWidth + 32));
-    measure();
-    const ro = new ResizeObserver(measure);
-    ro.observe(track);
-    window.addEventListener("resize", measure);
-    return () => {
-      ro.disconnect();
-      window.removeEventListener("resize", measure);
-    };
-  }, []);
+  useGSAP(
+    () => {
+      const section = sectionRef.current;
+      const track = trackRef.current;
+      if (!section || !track || prefersReducedMotion()) return;
+      const distance = () => Math.max(0, track.scrollWidth - window.innerWidth + 32);
+      // The sticky stage needs scroll room equal to the horizontal travel.
+      const size = () => {
+        section.style.height = `calc(100vh + ${distance()}px)`;
+      };
+      size();
 
-  if (reduce) {
-    return (
-      <div ref={sectionRef}>
-        {label}
-        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{children}</div>
-      </div>
-    );
-  }
+      gsap
+        .timeline({
+          scrollTrigger: {
+            trigger: section,
+            start: "top top",
+            end: "bottom bottom",
+            scrub: 0.5,
+            invalidateOnRefresh: true,
+            onRefreshInit: size,
+          },
+        })
+        .to(track, { x: () => -distance(), ease: "none" }, 0)
+        .fromTo(barRef.current, { scaleX: 0 }, { scaleX: 1, ease: "none" }, 0);
+    },
+    { scope: sectionRef },
+  );
 
   return (
-    <div ref={sectionRef} className="relative" style={{ height: `calc(100vh + ${distance}px)` }}>
-      <div className="sticky top-0 flex h-screen flex-col justify-center overflow-hidden pt-16">
+    <div ref={sectionRef} className="relative">
+      <div className="sticky top-0 flex min-h-screen flex-col justify-center overflow-hidden pt-16 motion-reduce:static motion-reduce:min-h-0">
         {label}
-        <motion.div ref={trackRef} style={{ x }} className="mt-8 flex w-max gap-5 pr-8">
+        <div
+          ref={trackRef}
+          className="mt-8 flex w-max gap-5 pr-8 motion-reduce:grid motion-reduce:w-auto motion-reduce:grid-cols-1 motion-reduce:pr-0 sm:motion-reduce:grid-cols-2 lg:motion-reduce:grid-cols-3"
+        >
           {children}
-        </motion.div>
-        <div className="mt-8 h-px w-full max-w-md bg-white/10">
-          <motion.div style={{ scaleX: bar }} className="h-full origin-left bg-accent" />
+        </div>
+        <div className="mt-8 h-px w-full max-w-md bg-white/10 motion-reduce:hidden">
+          <div ref={barRef} className="h-full origin-left scale-x-0 bg-accent" />
         </div>
       </div>
     </div>
   );
 }
 
-/**
- * Infinite marquee whose speed and skew react to scroll velocity.
- */
+/** Infinite marquee (CSS), paused on hover. */
 export function Marquee({
   items,
   reverse = false,
@@ -148,25 +128,20 @@ export function Marquee({
   const row = [...items, ...items];
   return (
     <div className={`marquee-mask relative flex overflow-hidden ${className}`}>
-      <div className={`marquee-track flex shrink-0 items-center gap-10 pr-10 ${reverse ? "marquee-reverse" : ""}`}>
-        {row.map((item, i) => (
-          <span key={i} className="flex items-center gap-10 whitespace-nowrap">
-            {item}
-            <span aria-hidden className="h-2 w-2 rounded-full bg-accent/70" />
-          </span>
-        ))}
-      </div>
-      <div
-        aria-hidden
-        className={`marquee-track flex shrink-0 items-center gap-10 pr-10 ${reverse ? "marquee-reverse" : ""}`}
-      >
-        {row.map((item, i) => (
-          <span key={i} className="flex items-center gap-10 whitespace-nowrap">
-            {item}
-            <span className="h-2 w-2 rounded-full bg-accent/70" />
-          </span>
-        ))}
-      </div>
+      {[0, 1].map((copy) => (
+        <div
+          key={copy}
+          aria-hidden={copy === 1 || undefined}
+          className={`marquee-track flex shrink-0 items-center gap-10 pr-10 ${reverse ? "marquee-reverse" : ""}`}
+        >
+          {row.map((item, i) => (
+            <span key={i} className="flex items-center gap-10 whitespace-nowrap">
+              {item}
+              <span aria-hidden className="h-2 w-2 rounded-full bg-accent/70" />
+            </span>
+          ))}
+        </div>
+      ))}
     </div>
   );
 }

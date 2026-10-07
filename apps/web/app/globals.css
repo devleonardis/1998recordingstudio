@@ -452,14 +452,8 @@ html.has-disc-cursor textarea {
 .intro-in {
   animation: intro-in 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
-.tg-word {
-  animation: tg-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
 @keyframes intro-in {
   from { opacity: 0; transform: translateY(18px); }
-}
-@keyframes tg-in {
-  from { opacity: 0; transform: translateY(0.35em); filter: blur(6px); }
 }
 
 /* Scroll reveals: a single IntersectionObserver adds .is-in as elements enter
@@ -575,8 +569,7 @@ html.has-disc-cursor textarea {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .intro-in,
-  .tg-word {
+  .intro-in {
     animation: none;
   }
   .tilt,
@@ -656,6 +649,48 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .record-player[data-at-end] .next-btn,
   .eq-mini i {
+    animation: none;
+  }
+}
+
+/* ─── Sleeve menu ──────────────────────────────────────────────────────────── */
+
+.sleeve-grooves {
+  background:
+    radial-gradient(circle, transparent 0 32%, rgba(255, 255, 255, 0.05) 32.4%, transparent 33%),
+    conic-gradient(from 20deg, rgba(255, 255, 255, 0.16), transparent 12%, transparent 45%, rgba(255, 255, 255, 0.12) 55%, transparent 68%),
+    repeating-radial-gradient(circle, #0b0b0d 0 2px, #17171c 2px 4px);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+
+.sleeve-spin {
+  animation: spin 6s linear infinite;
+}
+.sleeve-spin.is-cueing {
+  animation-duration: 1.8s;
+}
+
+.menu-disc {
+  background:
+    radial-gradient(circle, #0c1013 0 10%, #cd7948 11% 30%, transparent 31%),
+    repeating-radial-gradient(circle, #0d0d0f 0 1px, #23232a 1px 2px);
+  animation: spin 1.2s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sleeve-spin,
+  .menu-disc {
+    animation: none;
+  }
+}
+
+/* Hero record: idle spin lives on an inner layer, GSAP owns the outer one */
+.vinyl-spin {
+  animation: spin 9s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vinyl-spin {
     animation: none;
   }
 }
