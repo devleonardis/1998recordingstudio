@@ -1,6 +1,5 @@
 "use client";
 
-import { motion, useMotionValueEvent, useScroll, useSpring } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { ThinkingOrb } from "thinking-orbs";
@@ -29,47 +28,85 @@ function timecode(progress: number) {
 type Chapter = { label: string; el: HTMLElement };
 
 /**
- * The site as a DAW session: a playhead across the top, a transport with
- * running timecode, and clickable markers for every chapter of the page.
+ * The site as a DAW session: a playhead across the top (CSS scroll timeline),
+ * a transport with running timecode, and clickable markers for every chapter.
+ * One throttled scroll listener + one IntersectionObserver; no layout reads.
  */
 export function DawHud() {
   const pathname = usePathname();
-  const { scrollYProgress } = useScroll();
-  const playhead = useSpring(scrollYProgress, { stiffness: 200, damping: 40, restDelta: 0.0005 });
   const codeRef = useRef<HTMLSpanElement>(null);
+  const playheadRef = useRef<HTMLDivElement>(null);
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [active, setActive] = useState(0);
   const [scrolling, setScrolling] = useState(false);
-  const idleTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const track = tracks.find(([match]) => match(pathname))?.[1] ?? "00 · Session";
 
+  // Timecode + "is scrolling" + playhead fallback, at most once per frame.
   useEffect(() => {
-    const collect = () =>
-      setChapters(
-        Array.from(document.querySelectorAll<HTMLElement>("[data-chapter]")).map((el) => ({
-          label: el.dataset.chapter ?? "",
-          el,
-        })),
+    const cssPlayhead = CSS.supports("animation-timeline: scroll()");
+    let frame = 0;
+    let idle: ReturnType<typeof setTimeout> | undefined;
+    let isScrolling = false;
+
+    const paint = () => {
+      frame = 0;
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = max > 0 ? Math.min(1, window.scrollY / max) : 0;
+      if (codeRef.current) codeRef.current.textContent = timecode(progress);
+      if (!cssPlayhead && playheadRef.current) playheadRef.current.style.transform = `scaleX(${progress})`;
+    };
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(paint);
+      if (!isScrolling) {
+        isScrolling = true;
+        setScrolling(true);
+      }
+      clearTimeout(idle);
+      idle = setTimeout(() => {
+        isScrolling = false;
+        setScrolling(false);
+      }, 420);
+    };
+
+    paint();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      cancelAnimationFrame(frame);
+      clearTimeout(idle);
+      window.removeEventListener("scroll", onScroll);
+    };
+  }, []);
+
+  // Chapters of the current page; the active one is tracked by an observer.
+  useEffect(() => {
+    let observer: IntersectionObserver | undefined;
+    const timer = setTimeout(() => {
+      const found = Array.from(document.querySelectorAll<HTMLElement>("[data-chapter]")).map((el) => ({
+        label: el.dataset.chapter ?? "",
+        el,
+      }));
+      setChapters(found);
+      setActive(0);
+      observer = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (entry.isIntersecting) {
+              const index = found.findIndex((c) => c.el === entry.target);
+              if (index !== -1) setActive(index);
+            }
+          }
+        },
+        // A thin band at 45% of the viewport: whatever crosses it is "playing".
+        { rootMargin: "-45% 0px -54% 0px" },
       );
-    const timer = setTimeout(collect, 150);
-    return () => clearTimeout(timer);
+      found.forEach((c) => observer?.observe(c.el));
+    }, 150);
+    return () => {
+      clearTimeout(timer);
+      observer?.disconnect();
+    };
   }, [pathname]);
-
-  useMotionValueEvent(scrollYProgress, "change", (v) => {
-    if (codeRef.current) codeRef.current.textContent = timecode(v);
-
-    const probe = window.innerHeight * 0.45;
-    let current = 0;
-    chapters.forEach((c, i) => {
-      if (c.el.getBoundingClientRect().top < probe) current = i;
-    });
-    setActive(current);
-
-    setScrolling(true);
-    clearTimeout(idleTimer.current);
-    idleTimer.current = setTimeout(() => setScrolling(false), 420);
-  });
 
   function jump(el: HTMLElement) {
     const lenis = getLenis();
@@ -79,20 +116,15 @@ export function DawHud() {
 
   return (
     <>
-      <motion.div
+      <div
+        ref={playheadRef}
         aria-hidden
-        style={{ scaleX: playhead }}
-        className="fixed inset-x-0 top-0 z-[70] h-[2px] origin-left bg-gradient-to-r from-accent/40 via-accent to-[#F3C9A6]"
+        className="playhead fixed inset-x-0 top-0 z-[70] h-[2px] origin-left bg-gradient-to-r from-accent/40 via-accent to-[#F3C9A6]"
       />
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        className="daw-transport pointer-events-none fixed bottom-5 left-5 z-40 hidden items-center gap-3 rounded-full border border-white/10 bg-bg/70 py-1.5 pl-1.5 pr-4 font-mono text-[11px] uppercase tracking-[0.14em] text-muted backdrop-blur-xl md:flex"
-      >
+      <div className="daw-transport intro-in pointer-events-none fixed bottom-5 left-5 z-40 hidden items-center gap-3 rounded-full border border-white/10 bg-[#0c1013]/90 py-1.5 pl-1.5 pr-4 font-mono text-[11px] uppercase tracking-[0.14em] text-muted md:flex [animation-delay:1s]">
         <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white/[0.04]">
-          <ThinkingOrb state={scrolling ? "listening" : "breathing"} size={20} theme="dark" />
+          <ThinkingOrb state="listening" paused={!scrolling} size={20} theme="dark" />
         </span>
         <span className="flex items-center gap-1.5 text-accent">
           <span className={`h-1.5 w-1.5 rounded-full bg-accent ${scrolling ? "animate-pulse" : ""}`} />
@@ -111,7 +143,7 @@ export function DawHud() {
             </span>
           </>
         ) : null}
-      </motion.div>
+      </div>
 
       {chapters.length > 1 ? (
         <nav
@@ -127,7 +159,7 @@ export function DawHud() {
               aria-label={`Vai a ${c.label}`}
             >
               <span
-                className={`font-mono text-[10px] uppercase tracking-[0.16em] transition-all duration-300 ${
+                className={`font-mono text-[10px] uppercase tracking-[0.16em] transition-[opacity,transform] duration-300 ${
                   i === active
                     ? "translate-x-0 text-accent opacity-100"
                     : "translate-x-2 text-muted opacity-0 group-hover:translate-x-0 group-hover:opacity-100"
@@ -136,7 +168,7 @@ export function DawHud() {
                 {c.label}
               </span>
               <span
-                className={`block h-[2px] rounded-full transition-all duration-500 ${
+                className={`block h-[2px] rounded-full transition-[width,background-color] duration-500 ${
                   i === active ? "w-8 bg-accent" : "w-4 bg-white/25 group-hover:w-6 group-hover:bg-white/60"
                 }`}
               />

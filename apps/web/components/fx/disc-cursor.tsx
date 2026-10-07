@@ -1,23 +1,17 @@
 "use client";
 
-import { motion, useMotionValue, useSpring } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const INTERACTIVE = "a, button, [role='button'], label, summary, select";
 
 /**
  * Replaces the pointer with a spinning vinyl record. Desktop / fine pointers
- * only; it grows over links and buttons and hides when the pointer leaves.
+ * only. Position is written straight to the transform once per frame; hover
+ * and press states are CSS classes, so React never re-renders while moving.
  */
 export function DiscCursor() {
   const [enabled, setEnabled] = useState(false);
-  const [hovering, setHovering] = useState(false);
-  const [pressed, setPressed] = useState(false);
-  const [visible, setVisible] = useState(false);
-  const x = useMotionValue(-100);
-  const y = useMotionValue(-100);
-  const sx = useSpring(x, { stiffness: 900, damping: 50, mass: 0.2 });
-  const sy = useSpring(y, { stiffness: 900, damping: 50, mass: 0.2 });
+  const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const media = window.matchMedia("(hover: hover) and (pointer: fine)");
@@ -28,58 +22,57 @@ export function DiscCursor() {
   }, []);
 
   useEffect(() => {
-    if (!enabled) return;
+    const el = ref.current;
+    if (!enabled || !el) return;
     const root = document.documentElement;
     root.classList.add("has-disc-cursor");
 
-    const onMove = (e: PointerEvent) => {
-      x.set(e.clientX);
-      y.set(e.clientY);
-      setVisible(true);
-      const target = e.target as Element | null;
-      setHovering(Boolean(target?.closest?.(INTERACTIVE)));
+    let x = -100;
+    let y = -100;
+    let frame = 0;
+    const paint = () => {
+      frame = 0;
+      el.style.transform = `translate3d(${x}px, ${y}px, 0)`;
     };
-    const onDown = () => setPressed(true);
-    const onUp = () => setPressed(false);
-    const onLeave = () => setVisible(false);
+    const onMove = (e: PointerEvent) => {
+      x = e.clientX;
+      y = e.clientY;
+      el.dataset.visible = "";
+      if (!frame) frame = requestAnimationFrame(paint);
+    };
+    const onOver = (e: PointerEvent) => {
+      const hit = (e.target as Element | null)?.closest?.(INTERACTIVE);
+      el.toggleAttribute("data-hover", Boolean(hit));
+    };
+    const onDown = () => el.toggleAttribute("data-pressed", true);
+    const onUp = () => el.toggleAttribute("data-pressed", false);
+    const onLeave = () => delete el.dataset.visible;
 
     window.addEventListener("pointermove", onMove, { passive: true });
+    window.addEventListener("pointerover", onOver, { passive: true });
     window.addEventListener("pointerdown", onDown);
     window.addEventListener("pointerup", onUp);
     document.addEventListener("pointerleave", onLeave);
     window.addEventListener("blur", onLeave);
     return () => {
+      cancelAnimationFrame(frame);
       root.classList.remove("has-disc-cursor");
       window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerover", onOver);
       window.removeEventListener("pointerdown", onDown);
       window.removeEventListener("pointerup", onUp);
       document.removeEventListener("pointerleave", onLeave);
       window.removeEventListener("blur", onLeave);
     };
-  }, [enabled, x, y]);
+  }, [enabled]);
 
   if (!enabled) return null;
 
   return (
-    <motion.div
-      aria-hidden
-      style={{ x: sx, y: sy }}
-      className="pointer-events-none fixed left-0 top-0 z-[90]"
-    >
-      <motion.div
-        animate={{
-          scale: pressed ? 0.8 : hovering ? 1.7 : 1,
-          opacity: visible ? 1 : 0,
-        }}
-        transition={{ type: "spring", stiffness: 400, damping: 26 }}
-        className="-ml-[14px] -mt-[14px] h-7 w-7"
-      >
-        <div
-          className={`disc-cursor h-full w-full rounded-full shadow-[0_0_0_1px_rgba(228,226,219,0.25),0_6px_18px_rgba(0,0,0,0.5)] ${
-            hovering ? "disc-cursor-fast" : ""
-          }`}
-        />
-      </motion.div>
-    </motion.div>
+    <div ref={ref} aria-hidden className="disc-cursor-root pointer-events-none fixed left-0 top-0 z-[90]">
+      <div className="disc-cursor-scale -ml-[14px] -mt-[14px] h-7 w-7">
+        <div className="disc-cursor h-full w-full rounded-full shadow-[0_0_0_1px_rgba(228,226,219,0.25),0_6px_18px_rgba(0,0,0,0.5)]" />
+      </div>
+    </div>
   );
 }

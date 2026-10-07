@@ -69,7 +69,7 @@ type Service = (typeof services)[number];
 function Meter({ seed }: { seed: number }) {
   return (
     <div aria-hidden className="flex h-full items-end gap-[3px]">
-      {Array.from({ length: 28 }, (_, i) => (
+      {Array.from({ length: 16 }, (_, i) => (
         <span
           key={i}
           className="eq-bar w-full rounded-t-sm bg-gradient-to-t from-accent/30 via-accent/70 to-[#F3C9A6]"
@@ -188,7 +188,7 @@ function ServiceModal({ service, onClose }: { service: Service | null; onClose: 
   return (
     <div
       data-lenis-prevent
-      className={`fixed inset-0 z-[80] overflow-y-auto bg-black/65 px-4 py-6 backdrop-blur-md transition-opacity duration-200 ${
+      className={`fixed inset-0 z-[80] overflow-y-auto bg-black/75 px-4 py-6 backdrop-blur-sm transition-opacity duration-200 ${
         phase === "is-open" ? "opacity-100" : "opacity-0"
       }`}
       onClick={onClose}

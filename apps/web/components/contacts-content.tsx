@@ -6,6 +6,7 @@ import { TiltCard } from "./fx/interactive";
 
 export function ContactsContent() {
   const [status, setStatus] = useState<"idle" | "sending" | "sent">("idle");
+  const [showMap, setShowMap] = useState(false);
 
   function onSubmit(e: FormEvent) {
     e.preventDefault();
@@ -22,7 +23,22 @@ export function ContactsContent() {
           <p className="text-sm text-muted">Email: 19.98recordingstudio@gmail.com</p>
           <p className="text-sm text-muted">Via Umberto Minervini 25</p>
           <div className="mt-6 overflow-hidden rounded-xl border border-white/10">
-            <iframe title="Mappa Bari" src="https://maps.google.com/maps?q=Bari&t=&z=13&ie=UTF8&iwloc=&output=embed" className="h-[280px] w-full" loading="lazy" />
+            {showMap ? (
+              <iframe title="Mappa Bari" src="https://maps.google.com/maps?q=Bari&t=&z=13&ie=UTF8&iwloc=&output=embed" className="h-[280px] w-full" />
+            ) : (
+              // Facade: the Maps embed (~1MB of JS) only loads when asked for.
+              <button
+                type="button"
+                onClick={() => setShowMap(true)}
+                className="group relative flex h-[280px] w-full flex-col items-center justify-center gap-3 bg-[radial-gradient(circle_at_50%_45%,rgba(205,121,72,0.18),transparent_55%),repeating-linear-gradient(0deg,rgba(228,226,219,0.05)_0_1px,transparent_1px_32px),repeating-linear-gradient(90deg,rgba(228,226,219,0.05)_0_1px,transparent_1px_32px)] text-sm text-muted hover:translate-y-0"
+              >
+                <span className="flex h-12 w-12 items-center justify-center rounded-full border border-accent/60 bg-accent/15 text-xl text-accent transition-transform duration-300 group-hover:scale-110">
+                  ⌖
+                </span>
+                Via Umberto Minervini 25, Bari
+                <span className="text-xs uppercase tracking-[0.16em] text-accent">Mostra la mappa</span>
+              </button>
+            )}
           </div>
         </section>
       </TiltCard>

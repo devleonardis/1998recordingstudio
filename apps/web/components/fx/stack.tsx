@@ -63,7 +63,7 @@ function StackItem({
     >
       <motion.div
         style={{ scale, rotateX, transformOrigin: "50% 0%", transformPerspective: 1200 }}
-        className="relative w-full will-change-transform"
+        className="relative w-full"
       >
         {children}
         <motion.div
@@ -122,7 +122,7 @@ export function HorizontalTrack({
     <div ref={sectionRef} className="relative" style={{ height: `calc(100vh + ${distance}px)` }}>
       <div className="sticky top-0 flex h-screen flex-col justify-center overflow-hidden pt-16">
         {label}
-        <motion.div ref={trackRef} style={{ x }} className="mt-8 flex w-max gap-5 pr-8 will-change-transform">
+        <motion.div ref={trackRef} style={{ x }} className="mt-8 flex w-max gap-5 pr-8">
           {children}
         </motion.div>
         <div className="mt-8 h-px w-full max-w-md bg-white/10">

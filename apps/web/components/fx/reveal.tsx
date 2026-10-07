@@ -1,9 +1,10 @@
-"use client";
+import { CSSProperties, ReactNode } from "react";
 
-import { motion, useReducedMotion, useScroll, useSpring, useTransform } from "framer-motion";
-import { ReactNode, useRef } from "react";
-
-const ease = [0.22, 1, 0.36, 1] as const;
+/*
+ * Scroll effects are pure CSS scroll-driven animations (animation-timeline:
+ * view()), see globals.css. They run on the compositor with zero JavaScript
+ * per frame; browsers without support simply show the content in place.
+ */
 
 /**
  * Card that is "dealt" onto the page by the scroll position itself:
@@ -12,7 +13,7 @@ const ease = [0.22, 1, 0.36, 1] as const;
  */
 export function ScrollCard({
   children,
-  className,
+  className = "",
   depth = 1,
 }: {
   children: ReactNode;
@@ -20,53 +21,27 @@ export function ScrollCard({
   /** 0..1.5 — how dramatic the tilt is. */
   depth?: number;
 }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const reduce = useReducedMotion();
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start 98%", "start 62%"] });
-  const p = useSpring(scrollYProgress, { stiffness: 140, damping: 26, mass: 0.4 });
-
-  const rotateX = useTransform(p, [0, 1], [26 * depth, 0]);
-  const y = useTransform(p, [0, 1], [90 * depth, 0]);
-  const scale = useTransform(p, [0, 1], [0.9, 1]);
-  const opacity = useTransform(p, [0, 0.55, 1], [0, 0.85, 1]);
-
-  if (reduce) return <div className={className}>{children}</div>;
-
   return (
-    <div ref={ref} className={className} style={{ perspective: 1100 }}>
-      <motion.div
-        style={{ rotateX, y, scale, opacity, transformOrigin: "50% 100%" }}
-        className="h-full will-change-transform"
-      >
-        {children}
-      </motion.div>
+    <div className={`sd-card ${className}`} style={{ "--depth": depth } as CSSProperties}>
+      <div className="sd-card-inner h-full">{children}</div>
     </div>
   );
 }
 
-/** One-shot blur-up reveal for text blocks. */
+/** Blur-free rise-in for text blocks; `delay` staggers it along the scroll. */
 export function Reveal({
   children,
   delay = 0,
-  className,
-  as = "div",
+  className = "",
 }: {
   children: ReactNode;
   delay?: number;
   className?: string;
-  as?: "div" | "section" | "li" | "header";
 }) {
-  const Comp = motion[as];
   return (
-    <Comp
-      initial={{ opacity: 0, y: 28, filter: "blur(10px)" }}
-      whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-      viewport={{ once: true, amount: 0.3 }}
-      transition={{ duration: 0.8, delay, ease }}
-      className={className}
-    >
+    <div className={`sd-reveal ${className}`} style={{ "--shift": `${delay * 40}%` } as CSSProperties}>
       {children}
-    </Comp>
+    </div>
   );
 }
 
@@ -76,7 +51,7 @@ export function Reveal({
  */
 export function Scene({
   children,
-  className,
+  className = "",
   id,
   chapter,
 }: {
@@ -85,28 +60,19 @@ export function Scene({
   id?: string;
   chapter?: string;
 }) {
-  const ref = useRef<HTMLElement>(null);
-  const reduce = useReducedMotion();
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "start 35%"] });
-  const p = useSpring(scrollYProgress, { stiffness: 120, damping: 28, mass: 0.5 });
-  const scale = useTransform(p, [0, 1], [0.88, 1]);
-  const opacity = useTransform(p, [0, 0.6, 1], [0.15, 0.9, 1]);
-  const radius = useTransform(p, [0, 1], [56, 0]);
-
   return (
-    <motion.section
-      ref={ref}
-      id={id}
-      data-chapter={chapter}
-      style={reduce ? undefined : { scale, opacity, borderRadius: radius }}
-      className={className}
-    >
+    <section id={id} data-chapter={chapter} className={`sd-scene ${className}`}>
       {children}
-    </motion.section>
+    </section>
   );
 }
 
-/** Words fade in from blur one by one (Aceternity "Text Generate Effect"). */
+/** Element that lifts, shrinks and fades as you scroll past it. */
+export function ParallaxOut({ children, className = "" }: { children: ReactNode; className?: string }) {
+  return <div className={`sd-parallax-out ${className}`}>{children}</div>;
+}
+
+/** Words fade in one by one (Aceternity "Text Generate Effect"), CSS only. */
 export function TextGenerate({
   text,
   className,
@@ -118,23 +84,39 @@ export function TextGenerate({
   delay?: number;
   accentWords?: string[];
 }) {
-  const reduce = useReducedMotion();
   const words = text.split(" ");
   return (
     <span className={className}>
       {words.map((word, i) => (
         <span key={`${word}-${i}`}>
-          <motion.span
-            initial={reduce ? false : { opacity: 0, filter: "blur(12px)", y: "0.35em" }}
-            animate={{ opacity: 1, filter: "blur(0px)", y: 0 }}
-            transition={{ duration: 0.7, delay: delay + i * 0.07, ease }}
-            className={`inline-block ${accentWords.includes(word) ? "text-gradient-accent" : ""}`}
+          <span
+            className={`tg-word inline-block ${accentWords.includes(word) ? "text-gradient-accent" : ""}`}
+            style={{ animationDelay: `${delay + i * 0.07}s` }}
           >
             {word}
-          </motion.span>
+          </span>
           {i < words.length - 1 ? " " : null}
         </span>
       ))}
     </span>
+  );
+}
+
+/** One-time entrance on page load (CSS), staggered with `delay` seconds. */
+export function IntroIn({
+  children,
+  delay = 0,
+  className = "",
+  as: Tag = "div",
+}: {
+  children: ReactNode;
+  delay?: number;
+  className?: string;
+  as?: "div" | "p" | "aside";
+}) {
+  return (
+    <Tag className={`intro-in ${className}`} style={{ animationDelay: `${delay}s` }}>
+      {children}
+    </Tag>
   );
 }

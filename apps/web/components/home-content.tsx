@@ -1,16 +1,13 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { ThinkingOrb } from "thinking-orbs";
 import { HomeServices } from "@/components/home-services";
 import { ContactsContent } from "@/components/contacts-content";
 import { NextTrack } from "@/components/next-track";
-import { Reveal, Scene, ScrollCard, TextGenerate } from "@/components/fx/reveal";
-import { Magnetic, ParallaxOut, Spotlight, TiltCard, VelocitySkew } from "@/components/fx/interactive";
+import { IntroIn, ParallaxOut, Reveal, Scene, ScrollCard, TextGenerate } from "@/components/fx/reveal";
+import { Magnetic, Spotlight, TiltCard } from "@/components/fx/interactive";
 import { HorizontalTrack, Marquee } from "@/components/fx/stack";
 import { Waveform } from "@/components/fx/canvas";
-
-const easeOut = [0.22, 1, 0.36, 1] as const;
 
 const whatsappUrl = "https://wa.me/393883739941";
 
@@ -78,17 +75,14 @@ export function HomeContent() {
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_18%,rgba(205,121,72,0.14),transparent_26%),radial-gradient(circle_at_82%_12%,rgba(255,255,255,0.06),transparent_18%)]" />
             <div className="relative grid gap-8 lg:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.8fr)] lg:items-end">
               <div className="max-w-3xl">
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, ease: easeOut }}
+                <IntroIn
                   className="inline-flex items-center gap-2 rounded-full border border-accent/25 bg-accent/10 py-1.5 pl-1.5 pr-4 text-[11px] uppercase tracking-[0.22em] text-accent"
                 >
                   <span className="flex h-6 w-6 items-center justify-center rounded-full bg-black/30">
                     <ThinkingOrb state="listening" size={20} theme="dark" aria-label="Lo studio è in ascolto" />
                   </span>
                   In ascolto · Studio di registrazione a Bari
-                </motion.div>
+                </IntroIn>
                 <h1
                   id="home-hero-title"
                   className="mt-5 font-[var(--font-space)] text-[2.1rem] font-semibold leading-[0.96] text-white sm:text-5xl md:text-6xl lg:text-7xl"
@@ -99,21 +93,18 @@ export function HomeContent() {
                     delay={0.15}
                   />
                 </h1>
-                <motion.p
-                  initial={{ opacity: 0, y: 14, filter: "blur(8px)" }}
-                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                  transition={{ duration: 0.8, delay: 0.75, ease: easeOut }}
+                <IntroIn
+                  as="p"
+                  delay={0.75}
                   className="mt-5 max-w-2xl text-sm leading-7 text-muted sm:text-base md:text-lg"
                 >
                   19.98 Recording Studio ti accompagna dalla sessione alla versione finale del brano:
                   riprese vocali e strumentali, direzione artistica, mix e master in uno spazio pensato
                   per lavorare bene e pubblicare con sicurezza.
-                </motion.p>
+                </IntroIn>
 
-                <motion.div
-                  initial={{ opacity: 0, y: 14 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.7, delay: 0.9, ease: easeOut }}
+                <IntroIn
+                  delay={0.9}
                   className="mt-7 flex flex-col gap-3 sm:flex-row"
                 >
                   <Magnetic>
@@ -134,28 +125,22 @@ export function HomeContent() {
                       Inizia il viaggio ↓
                     </a>
                   </Magnetic>
-                </motion.div>
+                </IntroIn>
 
                 <div className="mt-8 grid gap-3 sm:grid-cols-3">
                   {heroHighlights.map((item, index) => (
-                    <motion.div
+                    <IntroIn
                       key={item}
-                      initial={{ opacity: 0, y: 14, filter: "blur(6px)" }}
-                      animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                      transition={{ duration: 0.6, delay: 1 + index * 0.08, ease: easeOut }}
-                      className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-4 text-sm leading-6 text-muted backdrop-blur-sm"
+                      delay={1 + index * 0.08}
+                      className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-4 text-sm leading-6 text-muted"
                     >
                       {item}
-                    </motion.div>
+                    </IntroIn>
                   ))}
                 </div>
               </div>
 
-              <motion.aside
-                initial={{ opacity: 0, y: 24, filter: "blur(8px)" }}
-                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                transition={{ duration: 0.8, delay: 0.5, ease: easeOut }}
-              >
+              <IntroIn as="aside" delay={0.5}>
                 <TiltCard className="rounded-2xl sm:rounded-[1.75rem]" max={7}>
                   <div className="surface relative overflow-hidden rounded-2xl border-white/12 p-5 sm:rounded-[1.75rem] sm:p-6">
                     <div aria-hidden className="vinyl absolute -right-16 -top-16 h-40 w-40 rounded-full opacity-60 shadow-[0_0_60px_rgba(205,121,72,0.25)]" />
@@ -186,13 +171,13 @@ export function HomeContent() {
                     </div>
                   </div>
                 </TiltCard>
-              </motion.aside>
+              </IntroIn>
             </div>
           </div>
         </ParallaxOut>
       </section>
 
-      <VelocitySkew className="-mx-4 mt-14 sm:-mx-6 md:mt-20">
+      <div className="-mx-4 mt-14 sm:-mx-6 md:mt-20">
         <Marquee
           items={["Prod", "Rec", "Mix", "Master", "Bari", "Oro & Platino", "19.98"]}
           className="font-[var(--font-space)] text-5xl font-semibold uppercase text-white/10 [-webkit-text-stroke:1px_rgba(228,226,219,0.35)] sm:text-7xl md:text-8xl"
@@ -202,7 +187,7 @@ export function HomeContent() {
           items={["Rap", "Trap", "Pop", "RnB", "Afrobeat", "Drill", "Urban", "Indie"]}
           className="mt-2 font-mono text-sm uppercase tracking-[0.3em] text-accent/80"
         />
-      </VelocitySkew>
+      </div>
 
       <HomeServices />
 

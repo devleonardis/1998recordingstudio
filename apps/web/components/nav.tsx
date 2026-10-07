@@ -70,7 +70,7 @@ export function Nav() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
         style={{ viewTransitionName: "site-header" }}
-        className="sticky top-0 z-50 border-b border-white/10 bg-bg/70 backdrop-blur-xl"
+        className="sticky top-0 z-50 border-b border-white/10 bg-bg/90 backdrop-blur-md"
       >
         <div className="mx-auto flex w-[min(1400px,calc(100%-2rem))] items-center justify-between gap-4 py-3 sm:w-[min(1400px,calc(100%-3rem))] md:py-4">
           <JourneyLink href="/" aria-label="Home" className="accent-hover flex items-center gap-3 rounded-full p-1">
