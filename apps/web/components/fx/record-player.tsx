@@ -290,7 +290,7 @@ export function RecordPlayer({ bonus }: { bonus: BonusSource[] }) {
           />
           <div
             data-lenis-prevent
-            className="tracklist mx-auto mb-2 max-h-[60vh] w-full max-w-[1100px] overflow-y-auto rounded-2xl border border-white/12 bg-[#0e1215] p-3 shadow-[0_-20px_60px_rgba(0,0,0,0.6)] sm:p-4"
+            className="tracklist mx-auto mb-2 max-h-[60vh] w-full max-w-[1100px] overflow-y-auto rounded-2xl border border-white/[0.12] bg-[#0e1215] p-3 shadow-[0_-20px_60px_rgba(0,0,0,0.6)] sm:p-4"
           >
             <div className="flex items-end justify-between px-2 pb-3">
               <div>
@@ -332,7 +332,7 @@ export function RecordPlayer({ bonus }: { bonus: BonusSource[] }) {
         </>
       ) : null}
 
-      <div className="relative mx-auto max-w-[1100px] overflow-hidden rounded-2xl border border-white/12 bg-[#0e1215]/95 shadow-[0_-10px_50px_rgba(0,0,0,0.55)]">
+      <div className="relative mx-auto max-w-[1100px] overflow-hidden rounded-2xl border border-white/[0.12] bg-[#0e1215]/95 shadow-[0_-10px_50px_rgba(0,0,0,0.55)]">
         {/* Mobile: the progress line runs along the top edge of the bar */}
         <div aria-hidden className="absolute inset-x-0 top-0 h-[2px] bg-white/10 sm:hidden">
           <div className="player-fill h-full origin-left bg-accent" />
