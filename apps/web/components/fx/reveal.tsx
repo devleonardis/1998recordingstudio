@@ -1,15 +1,14 @@
 import { CSSProperties, ReactNode } from "react";
 
 /*
- * Scroll effects are pure CSS scroll-driven animations (animation-timeline:
- * view()), see globals.css. They run on the compositor with zero JavaScript
- * per frame; browsers without support simply show the content in place.
+ * Scroll effects are CSS transitions toggled by one shared IntersectionObserver
+ * (RevealObserver): no per-frame JavaScript, and content stays visible if
+ * JS never runs. See .sd-* in globals.css.
  */
 
 /**
- * Card that is "dealt" onto the page by the scroll position itself:
- * it tilts up from a 3D plane while it travels into view and reverses
- * when scrolling back, so the page feels scrubbed like a timeline.
+ * Card that is "dealt" onto the page as it scrolls into view: it tilts up
+ * from a 3D plane and settles in place. Siblings in a grid are staggered.
  */
 export function ScrollCard({
   children,
@@ -28,7 +27,7 @@ export function ScrollCard({
   );
 }
 
-/** Blur-free rise-in for text blocks; `delay` staggers it along the scroll. */
+/** Blur-free rise-in for text blocks; `delay` (seconds) staggers siblings. */
 export function Reveal({
   children,
   delay = 0,
@@ -39,7 +38,7 @@ export function Reveal({
   className?: string;
 }) {
   return (
-    <div className={`sd-reveal ${className}`} style={{ "--shift": `${delay * 40}%` } as CSSProperties}>
+    <div className={`sd-reveal ${className}`} style={{ "--delay": `${delay}s` } as CSSProperties}>
       {children}
     </div>
   );
@@ -65,11 +64,6 @@ export function Scene({
       {children}
     </section>
   );
-}
-
-/** Element that lifts, shrinks and fades as you scroll past it. */
-export function ParallaxOut({ children, className = "" }: { children: ReactNode; className?: string }) {
-  return <div className={`sd-parallax-out ${className}`}>{children}</div>;
 }
 
 /** Words fade in one by one (Aceternity "Text Generate Effect"), CSS only. */

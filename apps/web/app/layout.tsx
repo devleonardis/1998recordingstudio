@@ -7,6 +7,7 @@ import { SmoothScroll } from "@/components/fx/smooth-scroll";
 import { RecordPlayer } from "@/components/fx/record-player";
 import { posts } from "@/app/blog/posts";
 import { DiscCursor } from "@/components/fx/disc-cursor";
+import { RevealObserver } from "@/components/fx/reveal-observer";
 import { DevTools } from "@/components/fx/dev-tools";
 import { PageTransition } from "@/components/fx/page-transition";
 
@@ -175,6 +176,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="it" className={`${inter.variable} ${spaceGrotesk.variable} ${mono.variable}`}>
       <body>
         <SmoothScroll />
+        <RevealObserver />
         <div aria-hidden className="grain" />
         <Nav />
         {/* Every route change is a "journey": the old page is flown through,

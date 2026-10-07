@@ -4,7 +4,7 @@ import { ThinkingOrb } from "thinking-orbs";
 import { HomeServices } from "@/components/home-services";
 import { ContactsContent } from "@/components/contacts-content";
 import { NextTrack } from "@/components/next-track";
-import { IntroIn, ParallaxOut, Reveal, Scene, ScrollCard, TextGenerate } from "@/components/fx/reveal";
+import { IntroIn, Reveal, Scene, ScrollCard, TextGenerate } from "@/components/fx/reveal";
 import { Magnetic, Spotlight, TiltCard } from "@/components/fx/interactive";
 import { HorizontalTrack, Marquee } from "@/components/fx/stack";
 import { Waveform } from "@/components/fx/canvas";
@@ -68,7 +68,6 @@ export function HomeContent() {
   return (
     <main className="pb-20 pt-5 md:pb-24 md:pt-10">
       <section data-chapter="Intro">
-        <ParallaxOut>
           <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-[radial-gradient(circle_at_top,rgba(38,41,82,0.34),rgba(12,16,19,0.82)_48%),linear-gradient(180deg,rgba(12,16,19,0.9),rgba(12,16,19,0.98))] px-4 py-7 shadow-[0_30px_90px_rgba(0,0,0,0.24)] sm:rounded-[2rem] sm:px-6 sm:py-10 md:px-10 md:py-14">
             <Spotlight className="-left-10 -top-40 md:-left-32 md:-top-20" />
             <Waveform className="opacity-80" />
@@ -174,7 +173,6 @@ export function HomeContent() {
               </IntroIn>
             </div>
           </div>
-        </ParallaxOut>
       </section>
 
       <div className="-mx-4 mt-14 sm:-mx-6 md:mt-20">
