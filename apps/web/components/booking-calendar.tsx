@@ -149,8 +149,9 @@ export function BookingCalendar({ initial }: { initial: BookingSelection }) {
                 config={{
                   layout: "month_view",
                   theme: "dark",
-                  date: picked.date,
-                  month: picked.date.slice(0, 7),
+                  // Calendar date of the start (a 00:00 slot is the next day).
+                  date: picked.start.slice(0, 10),
+                  month: picked.start.slice(0, 7),
                   slot: new Date(picked.start).toISOString(),
                 }}
                 style={{ width: "100%", height: "100%" }}
