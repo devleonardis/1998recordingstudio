@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ComponentProps } from "react";
 
-const ROUTE_ORDER = ["/", "/studio-registrazione-bari", "/produzione-musicale", "/mix-master", "/blog"];
+const ROUTE_ORDER = ["/", "/studio-registrazione-bari", "/produzione-musicale", "/mix-master", "/blog", "/prenota"];
 
 function depth(path: string) {
   const clean = path.split("#")[0].split("?")[0] || "/";
