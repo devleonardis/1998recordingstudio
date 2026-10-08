@@ -1,5 +1,8 @@
 import type { MetadataRoute } from "next";
 
+// Generated once at build time (static export).
+export const dynamic = "force-static";
+
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.1998recordingstudio.it";
 
 export default function robots(): MetadataRoute.Robots {

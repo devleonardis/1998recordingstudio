@@ -4,9 +4,25 @@
     {
       "name": "web",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev"],
+      "runtimeArgs": [
+        "run",
+        "dev"
+      ],
       "cwd": "apps/web",
       "port": 3000
+    },
+    {
+      "name": "web-static",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": [
+        "-y",
+        "serve@14.2.4",
+        "out",
+        "-l",
+        "4173"
+      ],
+      "cwd": "apps/web",
+      "port": 4173
     }
   ]
 }
