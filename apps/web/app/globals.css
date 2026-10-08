@@ -348,6 +348,16 @@ main {
   animation: journey-fade-in 520ms cubic-bezier(0.22, 1, 0.36, 1) 120ms both;
 }
 
+/* Touch devices: the journey snapshots the whole page (thousands of px tall at
+   3x density), which iOS Safari cannot hold in GPU memory: the screen stayed
+   black until the next scroll repainted it. Phones get the cheap
+   viewport-sized root crossfade instead. */
+@media (pointer: coarse) {
+  .page-shell {
+    view-transition-name: none !important;
+  }
+}
+
 /* Shared elements (service titles, blog titles) morph across routes. */
 ::view-transition-group(.morph) {
   animation-duration: 900ms;
