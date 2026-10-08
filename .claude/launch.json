@@ -23,6 +23,18 @@
       ],
       "cwd": "apps/web",
       "port": 4173
+    },
+    {
+      "name": "web-3100",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": [
+        "next",
+        "dev",
+        "-p",
+        "3100"
+      ],
+      "cwd": "apps/web",
+      "port": 3100
     }
   ]
 }

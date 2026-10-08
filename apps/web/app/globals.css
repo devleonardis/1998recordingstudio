@@ -722,3 +722,14 @@ body {
     animation: none;
   }
 }
+
+/* Logo lettering: thin, wide-tracked, as in the brand mark */
+.brand-numerals {
+  font-family: "Helvetica Neue", var(--font-inter), Arial, sans-serif;
+  font-weight: 200;
+}
+.brand-caption {
+  font-family: "Helvetica Neue", var(--font-inter), Arial, sans-serif;
+  font-weight: 300;
+  text-shadow: 0 0 6px rgba(200, 146, 60, 0.4);
+}

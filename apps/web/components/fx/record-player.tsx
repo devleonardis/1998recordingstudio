@@ -3,6 +3,7 @@
 import { usePathname, useRouter } from "next/navigation";
 import { CSSProperties, PointerEvent as ReactPointerEvent, useEffect, useMemo, useRef, useState } from "react";
 import { ALBUM_ARTIST, ALBUM_TITLE, BonusSource, Track, buildAlbum, formatTime } from "@/lib/album";
+import { CubeMark } from "../brand-logo";
 import { JourneyLink, journeyType, prepareJourney } from "./journey-link";
 import { getLenis } from "./smooth-scroll";
 import { gsap, prefersReducedMotion } from "@/lib/gsap";
@@ -341,7 +342,9 @@ export function RecordPlayer({ bonus }: { bonus: BonusSource[] }) {
         <div className="flex items-center gap-3 px-3 py-2.5 sm:gap-5 sm:px-4 sm:py-3">
           {/* Now playing */}
           <div className="flex min-w-0 flex-1 items-center gap-3 sm:w-[30%] sm:flex-none">
-            <div aria-hidden className="player-vinyl vinyl relative h-11 w-11 shrink-0 rounded-full shadow-[0_0_0_1px_rgba(228,226,219,0.18)] sm:h-12 sm:w-12" />
+            <div aria-hidden className="player-vinyl vinyl relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full shadow-[0_0_0_1px_rgba(228,226,219,0.18)] sm:h-12 sm:w-12">
+              <CubeMark className="h-[30%] w-auto" />
+            </div>
             <div className="min-w-0">
               <p className="truncate text-sm font-medium text-white">
                 <span className="font-mono text-xs text-accent">{track.no}</span> · <span ref={titleRef} />

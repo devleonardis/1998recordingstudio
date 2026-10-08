@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { MAIN_TRACKS, formatTime } from "@/lib/album";
 import { gsap, prefersReducedMotion, useGSAP } from "@/lib/gsap";
+import { CubeMark } from "./brand-logo";
 import { JourneyLink } from "./fx/journey-link";
 import { getLenis } from "./fx/smooth-scroll";
 
@@ -159,7 +160,7 @@ export function SleeveMenu({ open, onClose }: { open: boolean; onClose: () => vo
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_35%_30%,#f3c9a6,#cd7948_45%,#7a3e1d)]" />
             )}
             <div className="absolute inset-0 flex flex-col items-center justify-center text-center text-[#140d09]">
-              <span className="font-[var(--font-space)] text-[clamp(14px,3.4vw,30px)] font-bold leading-none">19.98</span>
+              <CubeMark className="h-[34%] w-auto drop-shadow-[0_2px_6px_rgba(0,0,0,0.35)]" />
               <span className="mt-1 font-mono text-[clamp(6px,1vw,10px)] uppercase tracking-[0.2em]">Lato A · 33⅓</span>
             </div>
           </div>
@@ -182,6 +183,7 @@ export function SleeveMenu({ open, onClose }: { open: boolean; onClose: () => vo
       {/* Top bar */}
       <div className="relative z-10 flex items-center justify-between px-5 pt-5 sm:px-8 sm:pt-6">
         <p className="sleeve-foot font-mono text-[11px] uppercase tracking-[0.24em] text-muted">
+          <CubeMark className="mr-2 inline-block h-5 w-auto align-[-5px]" />
           <span className="text-accent">19.98</span> · Tracklist · Lato A
         </p>
         <button

@@ -4,6 +4,7 @@ import { MeshGradient } from "@paper-design/shaders-react";
 import { useEffect, useRef, useState } from "react";
 import { ThinkingOrb } from "thinking-orbs";
 import { SplitText, gsap, prefersReducedMotion, useGSAP } from "@/lib/gsap";
+import { BrandLockup, CubeMark } from "./brand-logo";
 import { Magnetic, Spotlight } from "./fx/interactive";
 
 const whatsappUrl = "https://wa.me/393883739941";
@@ -135,7 +136,7 @@ export function HeroRecord() {
             <div className="vinyl-spin relative h-full w-full">
               <div className="sleeve-grooves absolute inset-0 rounded-full shadow-[0_30px_80px_rgba(0,0,0,0.6)]" />
               <div className="absolute inset-[33%] flex flex-col items-center justify-center rounded-full bg-[radial-gradient(circle_at_35%_30%,#f3c9a6,#cd7948_45%,#7a3e1d)] text-center text-[#140d09]">
-                <span className="font-[var(--font-space)] text-[clamp(14px,3vw,26px)] font-bold leading-none">19.98</span>
+                <CubeMark className="h-[34%] w-auto drop-shadow-[0_2px_6px_rgba(0,0,0,0.35)]" />
                 <span className="mt-1 font-mono text-[clamp(6px,0.9vw,9px)] uppercase tracking-[0.2em]">Lato A · 33⅓</span>
               </div>
               <div className="absolute left-1/2 top-1/2 h-[3%] w-[3%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#07090b]" />
@@ -153,25 +154,19 @@ export function HeroRecord() {
               maxPixelCount={wide ? 500_000 : 220_000}
               minPixelRatio={1}
             />
-            <div className="absolute inset-0 bg-[linear-gradient(160deg,transparent_40%,rgba(7,9,11,0.55))]" />
-            <div className="absolute inset-0 flex flex-col justify-between p-5 sm:p-7">
-              <div className="flex items-start justify-between">
-                <p className="font-[var(--font-space)] text-5xl font-bold leading-none tracking-tight text-white mix-blend-overlay sm:text-7xl">
-                  19.98
-                </p>
-                <p className="text-right font-mono text-[10px] uppercase leading-4 tracking-[0.2em] text-white/80">
-                  LP · Bari
-                  <br />
-                  Stereo
-                </p>
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_42%,rgba(9,13,24,0.1),rgba(9,13,24,0.72)_78%)]" />
+            <div className="absolute inset-0 flex flex-col p-5 sm:p-7">
+              <div className="flex justify-between font-mono text-[10px] uppercase tracking-[0.2em] text-white/75">
+                <span>LP · Bari</span>
+                <span>Stereo</span>
               </div>
-              <div className="flex items-end">
-                <p className="font-mono text-[10px] uppercase leading-4 tracking-[0.2em] text-white/85">
-                  Recording Studio
-                  <br />
-                  Prod · Rec · Mix · Master
-                </p>
-              </div>
+              <BrandLockup
+                className="m-auto [&_.brand-numerals]:text-3xl sm:[&_.brand-numerals]:text-5xl"
+                cubeClassName="h-[clamp(80px,20vw,150px)] w-auto"
+              />
+              <p className="text-center font-mono text-[10px] uppercase tracking-[0.2em] text-white/80">
+                Prod · Rec · Mix · Master
+              </p>
             </div>
           </div>
         </div>
