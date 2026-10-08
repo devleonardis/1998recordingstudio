@@ -27,7 +27,7 @@ export function TiltCard({
   children,
   className = "",
   max = 9,
-  glow = "rgba(205,121,72,0.18)",
+  glow = "rgba(212,133,58,0.18)",
 }: {
   children: ReactNode;
   className?: string;
@@ -100,34 +100,5 @@ export function Magnetic({ children, strength = 0.35 }: { children: ReactNode; s
     <div ref={ref} onPointerMove={onMove} onPointerLeave={onLeave} className="magnetic inline-flex">
       {children}
     </div>
-  );
-}
-
-/** Aceternity "Spotlight": a slow cone of light sweeping the hero. */
-export function Spotlight({ className = "" }: { className?: string }) {
-  return (
-    <svg
-      aria-hidden
-      className={`spotlight pointer-events-none absolute z-0 h-[169%] w-[138%] lg:w-[84%] ${className}`}
-      viewBox="0 0 3787 2842"
-      fill="none"
-    >
-      <ellipse
-        cx="1924.71"
-        cy="273.501"
-        rx="1924.71"
-        ry="273.501"
-        transform="matrix(-0.822377 -0.568943 -0.568943 0.822377 3631.88 2291.09)"
-        fill="url(#spotlight-fill)"
-        fillOpacity="0.3"
-      />
-      <defs>
-        <radialGradient id="spotlight-fill" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(1924 273) rotate(90) scale(273 1924)">
-          <stop stopColor="#F3C9A6" stopOpacity="0.9" />
-          <stop offset="0.45" stopColor="#CD7948" stopOpacity="0.35" />
-          <stop offset="1" stopColor="#CD7948" stopOpacity="0" />
-        </radialGradient>
-      </defs>
-    </svg>
   );
 }

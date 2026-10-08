@@ -99,7 +99,7 @@ export default function StudioRegistrazioneBariPage() {
         {/* ── Hero ──────────────────────────────────────────────────────────── */}
         <section data-chapter="Intro" className="mb-20 md:mb-24">
           <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-xs uppercase tracking-[0.14em] text-[#B8ABA2]">
-            <span className="text-[#CD7948]">📍</span>
+            <span className="text-[#D4853A]">📍</span>
             Via Umberto Minervini 25 · Bari
           </div>
 
@@ -121,7 +121,7 @@ export default function StudioRegistrazioneBariPage() {
           <div className="flex flex-col gap-3 sm:flex-row">
             <JourneyLink
               href="/prenota?servizio=recording"
-              className="rounded-full border border-[#CD7948] bg-[#CD7948] px-6 py-3 text-sm font-medium uppercase tracking-[0.14em] text-[#140d09] text-center"
+              className="rounded-full border border-[#D4853A] bg-[#D4853A] px-6 py-3 text-sm font-medium uppercase tracking-[0.14em] text-[#140d09] text-center"
             >
               Prenota
             </JourneyLink>
@@ -233,8 +233,8 @@ export default function StudioRegistrazioneBariPage() {
             mettiamo a disposizione di ogni artista.
           </p>
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-            <div className="rounded-2xl border border-[#CD7948]/25 bg-[#CD7948]/[0.08] p-6">
-              <p className="mb-1 text-sm uppercase tracking-[0.14em] text-[#CD7948]">
+            <div className="rounded-2xl border border-[#D4853A]/25 bg-[#D4853A]/[0.08] p-6">
+              <p className="mb-1 text-sm uppercase tracking-[0.14em] text-[#D4853A]">
                 Certificazione
               </p>
               <p className="text-base leading-6 text-[#E4E2DB]">
@@ -242,8 +242,8 @@ export default function StudioRegistrazioneBariPage() {
                 al 19.98 Recording Studio di Bari.
               </p>
             </div>
-            <div className="rounded-2xl border border-[#CD7948]/25 bg-[#CD7948]/[0.08] p-6">
-              <p className="mb-1 text-sm uppercase tracking-[0.14em] text-[#CD7948]">
+            <div className="rounded-2xl border border-[#D4853A]/25 bg-[#D4853A]/[0.08] p-6">
+              <p className="mb-1 text-sm uppercase tracking-[0.14em] text-[#D4853A]">
                 Standard di qualità
               </p>
               <p className="text-base leading-6 text-[#E4E2DB]">
@@ -264,7 +264,7 @@ export default function StudioRegistrazioneBariPage() {
           </h2>
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
             <div className="surface rounded-2xl p-5">
-              <p className="mb-1 text-xs uppercase tracking-[0.14em] text-[#CD7948]">Indirizzo</p>
+              <p className="mb-1 text-xs uppercase tracking-[0.14em] text-[#D4853A]">Indirizzo</p>
               <address className="not-italic text-sm leading-6 text-[#E4E2DB]">
                 Via Umberto Minervini 25
                 <br />
@@ -274,25 +274,25 @@ export default function StudioRegistrazioneBariPage() {
               </address>
             </div>
             <div className="surface rounded-2xl p-5">
-              <p className="mb-1 text-xs uppercase tracking-[0.14em] text-[#CD7948]">Telefono</p>
+              <p className="mb-1 text-xs uppercase tracking-[0.14em] text-[#D4853A]">Telefono</p>
               <a
                 href="tel:+393883739941"
-                className="text-sm text-[#E4E2DB] hover:text-[#CD7948]"
+                className="text-sm text-[#E4E2DB] hover:text-[#D4853A]"
               >
                 +39 388 3739941
               </a>
             </div>
             <div className="surface rounded-2xl p-5">
-              <p className="mb-1 text-xs uppercase tracking-[0.14em] text-[#CD7948]">Email</p>
+              <p className="mb-1 text-xs uppercase tracking-[0.14em] text-[#D4853A]">Email</p>
               <a
                 href="mailto:19.98recordingstudio@gmail.com"
-                className="break-all text-sm text-[#E4E2DB] hover:text-[#CD7948]"
+                className="break-all text-sm text-[#E4E2DB] hover:text-[#D4853A]"
               >
                 19.98recordingstudio@gmail.com
               </a>
             </div>
             <div className="surface rounded-2xl p-5">
-              <p className="mb-1 text-xs uppercase tracking-[0.14em] text-[#CD7948]">Orari</p>
+              <p className="mb-1 text-xs uppercase tracking-[0.14em] text-[#D4853A]">Orari</p>
               <p className="text-sm leading-6 text-[#E4E2DB]">
                 Tutti i giorni
                 <br />
@@ -338,8 +338,8 @@ export default function StudioRegistrazioneBariPage() {
         </Scene>
 
         {/* ── CTA finale ────────────────────────────────────────────────────── */}
-        <Scene chapter="Inizia" className="rounded-2xl border border-[#CD7948]/20 bg-[#CD7948]/5 px-6 py-10 text-center md:px-12">
-          <p className="mb-2 text-sm uppercase tracking-[0.14em] text-[#CD7948]">
+        <Scene chapter="Inizia" className="rounded-2xl border border-[#D4853A]/20 bg-[#D4853A]/5 px-6 py-10 text-center md:px-12">
+          <p className="mb-2 text-sm uppercase tracking-[0.14em] text-[#D4853A]">
             Studio di Registrazione · Bari
           </p>
           <h2
@@ -355,7 +355,7 @@ export default function StudioRegistrazioneBariPage() {
           <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
             <JourneyLink
               href="/prenota?servizio=recording"
-              className="rounded-full border border-[#CD7948] bg-[#CD7948] px-6 py-3 text-sm font-medium uppercase tracking-[0.14em] text-[#140d09]"
+              className="rounded-full border border-[#D4853A] bg-[#D4853A] px-6 py-3 text-sm font-medium uppercase tracking-[0.14em] text-[#140d09]"
             >
               Prenota
             </JourneyLink>

@@ -25,9 +25,9 @@ export const CAL_UI = {
   // Our ticket already shows the session: the embed is just the form.
   hideEventTypeDetails: true,
   cssVarsPerTheme: {
-    light: { "cal-brand": "#CD7948" },
+    light: { "cal-brand": "#D4853A" },
     dark: {
-      "cal-brand": "#CD7948",
+      "cal-brand": "#D4853A",
       "cal-brand-emphasis": "#E08B58",
       "cal-brand-text": "#140d09",
       // The booker panel is bg-muted + border-subtle: both go, so no card in a card.
@@ -124,7 +124,7 @@ export function BookingCheckout({
       <aside className="ticket relative self-start overflow-hidden rounded-[2rem] border border-white/10">
         <MeshGradient
           className="pointer-events-none !absolute inset-0"
-          colors={["#07090b", "#1d1b3a", "#cd7948", "#262952", "#0c1013"]}
+          colors={["#07090b", "#1d1b3a", "#d4853a", "#262952", "#090d18"]}
           distortion={0.8}
           swirl={0.3}
           grainOverlay={0.35}
@@ -141,10 +141,10 @@ export function BookingCheckout({
           </div>
 
           <div className="ticket-row mt-6 flex items-center gap-4">
-            <div className="ticket-disc relative h-16 w-16 shrink-0 overflow-hidden rounded-full shadow-[0_0_40px_rgba(205,121,72,0.35)]">
+            <div className="ticket-disc relative h-16 w-16 shrink-0 overflow-hidden rounded-full shadow-[0_0_40px_rgba(212,133,58,0.35)]">
               <LiquidMetal
                 className="!absolute inset-0"
-                colorBack="#cd7948"
+                colorBack="#d4853a"
                 colorTint="#ffe6cc"
                 shape="circle"
                 repetition={4}

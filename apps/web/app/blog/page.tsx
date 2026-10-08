@@ -33,7 +33,7 @@ export default function BlogPage() {
     <main className="pb-20 pt-5 md:pb-24 md:pt-10">
       {/* Header */}
       <Reveal className="mb-12 md:mb-16">
-        <p className="mb-4 text-sm uppercase tracking-[0.14em] text-[#CD7948]">
+        <p className="mb-4 text-sm uppercase tracking-[0.14em] text-[#D4853A]">
           Dal 19.98 Recording Studio
         </p>
         <h1
@@ -56,7 +56,7 @@ export default function BlogPage() {
             {/* Meta info */}
             <div className="mb-3 flex items-center gap-3 text-xs text-[#B8ABA2]">
               <span>{formatDate(post.date)}</span>
-              <span className="text-[#CD7948]/60">·</span>
+              <span className="text-[#D4853A]/60">·</span>
               <span>{post.readingTime} di lettura</span>
             </div>
 
@@ -74,7 +74,7 @@ export default function BlogPage() {
             <p className="mb-5 text-sm leading-6 text-[#B8ABA2]">{post.description}</p>
 
             {/* CTA */}
-            <span className="inline-flex items-center gap-1.5 text-sm font-medium text-[#CD7948]">
+            <span className="inline-flex items-center gap-1.5 text-sm font-medium text-[#D4853A]">
               Leggi l&apos;articolo
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -97,8 +97,8 @@ export default function BlogPage() {
       </div>
 
       {/* Bottom CTA */}
-      <div data-chapter="Inizia" className="mt-20 rounded-2xl border border-[#CD7948]/20 bg-[#CD7948]/5 px-6 py-10 text-center md:px-12">
-        <p className="mb-2 text-sm uppercase tracking-[0.14em] text-[#CD7948]">
+      <div data-chapter="Inizia" className="mt-20 rounded-2xl border border-[#D4853A]/20 bg-[#D4853A]/5 px-6 py-10 text-center md:px-12">
+        <p className="mb-2 text-sm uppercase tracking-[0.14em] text-[#D4853A]">
           19.98 Recording Studio · Bari
         </p>
         <h2
@@ -114,7 +114,7 @@ export default function BlogPage() {
         <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
           <JourneyLink
             href="/prenota"
-            className="rounded-full border border-[#CD7948] bg-[#CD7948] px-6 py-3 text-sm font-medium uppercase tracking-[0.14em] text-[#140d09]"
+            className="rounded-full border border-[#D4853A] bg-[#D4853A] px-6 py-3 text-sm font-medium uppercase tracking-[0.14em] text-[#140d09]"
           >
             Prenota
           </JourneyLink>

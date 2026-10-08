@@ -30,7 +30,7 @@ export function ContactsContent() {
               <button
                 type="button"
                 onClick={() => setShowMap(true)}
-                className="group relative flex h-[280px] w-full flex-col items-center justify-center gap-3 bg-[radial-gradient(circle_at_50%_45%,rgba(205,121,72,0.18),transparent_55%),repeating-linear-gradient(0deg,rgba(228,226,219,0.05)_0_1px,transparent_1px_32px),repeating-linear-gradient(90deg,rgba(228,226,219,0.05)_0_1px,transparent_1px_32px)] text-sm text-muted hover:translate-y-0"
+                className="group relative flex h-[280px] w-full flex-col items-center justify-center gap-3 bg-[radial-gradient(circle_at_50%_45%,rgba(212,133,58,0.18),transparent_55%),repeating-linear-gradient(0deg,rgba(228,226,219,0.05)_0_1px,transparent_1px_32px),repeating-linear-gradient(90deg,rgba(228,226,219,0.05)_0_1px,transparent_1px_32px)] text-sm text-muted hover:translate-y-0"
               >
                 <span className="flex h-12 w-12 items-center justify-center rounded-full border border-accent/60 bg-accent/15 text-xl text-accent transition-transform duration-300 group-hover:scale-110">
                   ⌖

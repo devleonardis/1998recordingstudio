@@ -58,7 +58,7 @@ function RenderSection({ section }: { section: Section }) {
         <ul className="mt-4 space-y-2 pl-4">
           {section.items.map((item, i) => (
             <li key={i} className="flex gap-2 text-[#B8ABA2]">
-              <span className="text-[#CD7948]">—</span>
+              <span className="text-[#D4853A]">—</span>
               <span>{item}</span>
             </li>
           ))}
@@ -66,7 +66,7 @@ function RenderSection({ section }: { section: Section }) {
       );
     case "highlight":
       return (
-        <div className="mt-6 rounded-2xl border border-[#CD7948]/25 bg-[#CD7948]/[0.08] px-5 py-4 text-sm leading-7 text-[#E4E2DB]">
+        <div className="mt-6 rounded-2xl border border-[#D4853A]/25 bg-[#D4853A]/[0.08] px-5 py-4 text-sm leading-7 text-[#E4E2DB]">
           {section.text}
         </div>
       );
@@ -140,11 +140,11 @@ export default async function BlogPostPage({
           <JourneyLink href="/" className="hover:text-white">
             Home
           </JourneyLink>
-          <span className="text-[#CD7948]/60">/</span>
+          <span className="text-[#D4853A]/60">/</span>
           <JourneyLink href="/blog" className="hover:text-white">
             Blog
           </JourneyLink>
-          <span className="text-[#CD7948]/60">/</span>
+          <span className="text-[#D4853A]/60">/</span>
           <span className="truncate text-[#E4E2DB]">{post.title}</span>
         </nav>
 
@@ -160,7 +160,7 @@ export default async function BlogPostPage({
           </ViewTransition>
           <div className="flex items-center gap-4 text-sm text-[#B8ABA2]">
             <time dateTime={post.date}>{formatDate(post.date)}</time>
-            <span className="text-[#CD7948]/60">·</span>
+            <span className="text-[#D4853A]/60">·</span>
             <span>{post.readingTime} di lettura</span>
           </div>
         </header>

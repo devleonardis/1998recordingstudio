@@ -10,8 +10,8 @@ export default function manifest(): MetadataRoute.Manifest {
     description: "Studio di registrazione a Bari: produzione, recording, mix e master.",
     start_url: "/",
     display: "standalone",
-    background_color: "#0C1013",
-    theme_color: "#0C1013",
+    background_color: "#090D18",
+    theme_color: "#090D18",
     icons: [
       { src: "/icon-192.png", sizes: "192x192", type: "image/png" },
       { src: "/icon-512.png", sizes: "512x512", type: "image/png" },

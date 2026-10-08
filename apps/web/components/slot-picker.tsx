@@ -260,7 +260,7 @@ export function SlotPicker({
                     onClick={() => onPick({ start })}
                     className="group flex w-full items-center gap-2.5 rounded-xl border border-white/10 bg-white/[0.03] px-3 py-3 text-left text-sm transition-colors hover:translate-y-0 hover:border-accent hover:bg-accent/10"
                   >
-                    <span aria-hidden className="h-2 w-2 shrink-0 rounded-full bg-accent shadow-[0_0_10px_rgba(205,121,72,0.8)]" />
+                    <span aria-hidden className="h-2 w-2 shrink-0 rounded-full bg-accent shadow-[0_0_10px_rgba(212,133,58,0.8)]" />
                     <span className="tabular-nums text-text group-hover:text-accent">
                       {time} – {endTime(time, option.minutes)}
                     </span>

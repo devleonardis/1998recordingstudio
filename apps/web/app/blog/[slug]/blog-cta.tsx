@@ -1,7 +1,7 @@
 export function BlogCta() {
   return (
-    <div className="mt-10 rounded-2xl border border-[#CD7948]/25 bg-[#CD7948]/[0.08] px-5 py-8 text-center">
-      <p className="mb-2 text-sm uppercase tracking-[0.14em] text-[#CD7948]">
+    <div className="mt-10 rounded-2xl border border-[#D4853A]/25 bg-[#D4853A]/[0.08] px-5 py-8 text-center">
+      <p className="mb-2 text-sm uppercase tracking-[0.14em] text-[#D4853A]">
         19.98 Recording Studio
       </p>
       <h3
@@ -16,7 +16,7 @@ export function BlogCta() {
       <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
         <a
           href="/prenota"
-          className="rounded-full border border-[#CD7948] bg-[#CD7948] px-6 py-3 text-sm font-medium uppercase tracking-[0.14em] text-[#140d09]"
+          className="rounded-full border border-[#D4853A] bg-[#D4853A] px-6 py-3 text-sm font-medium uppercase tracking-[0.14em] text-[#140d09]"
         >
           Prenota
         </a>

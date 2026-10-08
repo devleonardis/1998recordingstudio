@@ -95,7 +95,7 @@ function ServiceCard({ service, index, onPreview }: { service: Service; index: n
       className={`group relative overflow-hidden rounded-[2rem] border border-white/[0.12] bg-[#0d1014] p-6 shadow-[0_40px_120px_rgba(0,0,0,0.55)] sm:p-8 md:p-10`}
     >
       <div className={`absolute inset-0 bg-gradient-to-br ${service.tint} to-transparent`} />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_85%_15%,rgba(205,121,72,0.16),transparent_40%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_85%_15%,rgba(212,133,58,0.16),transparent_40%)]" />
       <JourneyLink
         href={service.href}
         aria-label={`Scopri ${service.title}`}

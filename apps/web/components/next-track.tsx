@@ -24,7 +24,7 @@ export function NextTrack({
       <JourneyLink
         href={href}
         data-chapter="Prossima traccia"
-        className="group relative block overflow-hidden rounded-[2rem] border border-white/[0.12] bg-[radial-gradient(circle_at_20%_0%,rgba(205,121,72,0.22),transparent_50%),linear-gradient(180deg,#11151a,#0a0d10)] py-10 hover:translate-y-0 hover:border-accent/50 md:py-14"
+        className="group relative block overflow-hidden rounded-[2rem] border border-white/[0.12] bg-[radial-gradient(circle_at_20%_0%,rgba(212,133,58,0.22),transparent_50%),linear-gradient(180deg,#11151a,#0a0d10)] py-10 hover:translate-y-0 hover:border-accent/50 md:py-14"
       >
         <div className="flex items-center justify-between px-6 font-mono text-xs uppercase tracking-[0.2em] text-muted md:px-10">
           <span>

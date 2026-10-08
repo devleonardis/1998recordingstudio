@@ -123,7 +123,7 @@ export function SleeveMenu({ open, onClose }: { open: boolean; onClose: () => vo
       {/* Cover art: a live shader in the studio colours */}
       <MeshGradient
         className="pointer-events-none !absolute inset-0"
-        colors={["#07090b", "#1d1b3a", "#cd7948", "#262952", "#0c1013"]}
+        colors={["#07090b", "#1d1b3a", "#d4853a", "#262952", "#090d18"]}
         distortion={0.85}
         swirl={0.35}
         grainOverlay={0.35}
@@ -145,7 +145,7 @@ export function SleeveMenu({ open, onClose }: { open: boolean; onClose: () => vo
             {wide ? (
               <LiquidMetal
                 className="!absolute inset-0"
-                colorBack="#cd7948"
+                colorBack="#d4853a"
                 colorTint="#ffe6cc"
                 shape="circle"
                 repetition={4}
@@ -157,7 +157,7 @@ export function SleeveMenu({ open, onClose }: { open: boolean; onClose: () => vo
                 minPixelRatio={1}
               />
             ) : (
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_35%_30%,#f3c9a6,#cd7948_45%,#7a3e1d)]" />
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_35%_30%,#f3c9a6,#d4853a_45%,#7a3e1d)]" />
             )}
             <div className="absolute inset-0 flex flex-col items-center justify-center text-center text-[#140d09]">
               <CubeMark className="h-[34%] w-auto drop-shadow-[0_2px_6px_rgba(0,0,0,0.35)]" />
@@ -174,7 +174,7 @@ export function SleeveMenu({ open, onClose }: { open: boolean; onClose: () => vo
           style={{ transform: `rotate(${ARM_REST}deg)` }}
         >
           <circle cx="156" cy="40" r="26" fill="#1a1d22" stroke="#3a3f47" strokeWidth="3" />
-          <circle cx="156" cy="40" r="9" fill="#cd7948" />
+          <circle cx="156" cy="40" r="9" fill="#d4853a" />
           <path d="M156 40 L150 300 L110 360" fill="none" stroke="#c9d2de" strokeWidth="7" strokeLinecap="round" strokeLinejoin="round" />
           <rect x="88" y="350" width="40" height="22" rx="4" transform="rotate(-38 108 361)" fill="#2b3038" stroke="#c9d2de" strokeWidth="2" />
         </svg>

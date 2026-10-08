@@ -24,7 +24,7 @@ function StepRail({ step }: { step: number }) {
       <span aria-hidden className="absolute left-0 right-0 top-[7px] h-px bg-white/10" />
       <span
         aria-hidden
-        className="absolute left-0 top-[7px] h-px bg-accent shadow-[0_0_12px_rgba(205,121,72,0.8)] transition-[width] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]"
+        className="absolute left-0 top-[7px] h-px bg-accent shadow-[0_0_12px_rgba(212,133,58,0.8)] transition-[width] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]"
         style={{ width: `${((step - 1) / (STEPS.length - 1)) * 100}%` }}
       />
       {STEPS.map((label, i) => {
@@ -40,7 +40,7 @@ function StepRail({ step }: { step: number }) {
               aria-hidden
               className={`h-[15px] w-[15px] rounded-full border transition-colors duration-500 ${
                 state === "next" ? "border-white/20 bg-bg" : "border-accent bg-accent"
-              } ${state === "active" ? "shadow-[0_0_0_5px_rgba(205,121,72,0.18)]" : ""}`}
+              } ${state === "active" ? "shadow-[0_0_0_5px_rgba(212,133,58,0.18)]" : ""}`}
             />
             <span
               className={`mt-3 font-mono text-[10px] uppercase tracking-[0.2em] ${

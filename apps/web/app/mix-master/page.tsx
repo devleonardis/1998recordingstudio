@@ -108,7 +108,7 @@ export default function MixMasterPage() {
           <div className="flex flex-col gap-3 sm:flex-row">
             <JourneyLink
               href="/prenota?servizio=mix-master"
-              className="rounded-full border border-[#CD7948] bg-[#CD7948] px-6 py-3 text-sm font-medium uppercase tracking-[0.14em] text-[#140d09] text-center"
+              className="rounded-full border border-[#D4853A] bg-[#D4853A] px-6 py-3 text-sm font-medium uppercase tracking-[0.14em] text-[#140d09] text-center"
             >
               Prenota
             </JourneyLink>
@@ -210,7 +210,7 @@ export default function MixMasterPage() {
               },
             ].map((item) => (
               <FxCard key={item.step} wrapperClassName="w-[78vw] shrink-0 sm:w-[380px]" className="surface accent-hover rounded-2xl p-6">
-                <span className="mb-3 block text-2xl font-bold text-[#CD7948]/40">{item.step}</span>
+                <span className="mb-3 block text-2xl font-bold text-[#D4853A]/40">{item.step}</span>
                 <h3 className="mb-2 font-semibold text-white">{item.title}</h3>
                 <p className="text-sm leading-6 text-[#B8ABA2]">{item.text}</p>
               </FxCard>
@@ -240,7 +240,7 @@ export default function MixMasterPage() {
               "Rapper e vocalist che vogliono un singolo pronto per la distribuzione su Spotify",
             ].map((item, i) => (
               <li key={i} className="flex gap-2 text-[#B8ABA2]">
-                <span className="text-[#CD7948]">—</span>
+                <span className="text-[#D4853A]">—</span>
                 <span className="text-sm leading-6">{item}</span>
               </li>
             ))}
@@ -271,7 +271,7 @@ export default function MixMasterPage() {
               },
             ].map((f) => (
               <FxCard key={f.format} className="surface accent-hover rounded-2xl p-6">
-                <h3 className="mb-2 font-semibold text-[#CD7948]">{f.format}</h3>
+                <h3 className="mb-2 font-semibold text-[#D4853A]">{f.format}</h3>
                 <p className="text-sm leading-6 text-[#B8ABA2]">{f.desc}</p>
               </FxCard>
             ))}
@@ -279,8 +279,8 @@ export default function MixMasterPage() {
         </Scene>
 
         {/* ── CTA ───────────────────────────────────────────────────────────── */}
-        <Scene chapter="Inizia" className="rounded-2xl border border-[#CD7948]/20 bg-[#CD7948]/5 px-6 py-10 text-center md:px-12">
-          <p className="mb-2 text-sm uppercase tracking-[0.14em] text-[#CD7948]">
+        <Scene chapter="Inizia" className="rounded-2xl border border-[#D4853A]/20 bg-[#D4853A]/5 px-6 py-10 text-center md:px-12">
+          <p className="mb-2 text-sm uppercase tracking-[0.14em] text-[#D4853A]">
             Mix &amp; Master · Bari
           </p>
           <h2
@@ -296,7 +296,7 @@ export default function MixMasterPage() {
           <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
             <JourneyLink
               href="/prenota?servizio=mix-master"
-              className="rounded-full border border-[#CD7948] bg-[#CD7948] px-6 py-3 text-sm font-medium uppercase tracking-[0.14em] text-[#140d09]"
+              className="rounded-full border border-[#D4853A] bg-[#D4853A] px-6 py-3 text-sm font-medium uppercase tracking-[0.14em] text-[#140d09]"
             >
               Prenota
             </JourneyLink>

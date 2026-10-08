@@ -4,6 +4,7 @@ import "./globals.css";
 import { Nav } from "@/components/nav";
 import { Footer } from "@/components/footer";
 import { SmoothScroll } from "@/components/fx/smooth-scroll";
+import { StudioRoom } from "@/components/fx/studio-room";
 import { RecordPlayer } from "@/components/fx/record-player";
 import { posts } from "@/app/blog/posts";
 import { DiscCursor } from "@/components/fx/disc-cursor";
@@ -21,7 +22,7 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.1998recordings
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#0c1013",
+  themeColor: "#090d18",
 };
 
 export const metadata: Metadata = {
@@ -179,6 +180,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="it" className={`${inter.variable} ${spaceGrotesk.variable} ${mono.variable}`}>
       <body>
+        <StudioRoom />
         <SmoothScroll />
         <RevealObserver />
         <SplitHeadings />

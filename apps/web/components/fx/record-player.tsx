@@ -390,7 +390,7 @@ export function RecordPlayer({ bonus }: { bonus: BonusSource[] }) {
                 }}
                 aria-label={playing ? "Pausa" : "Riproduci: scorre la pagina da sola"}
                 aria-pressed={playing}
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-text text-[#0c1013] hover:translate-y-0 hover:scale-105"
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-text text-[#090d18] hover:translate-y-0 hover:scale-105"
               >
                 {playing ? (
                   <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden>

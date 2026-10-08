@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { ThinkingOrb } from "thinking-orbs";
 import { SplitText, gsap, prefersReducedMotion, useGSAP } from "@/lib/gsap";
 import { BrandLockup, CubeMark } from "./brand-logo";
-import { Magnetic, Spotlight } from "./fx/interactive";
+import { Magnetic } from "./fx/interactive";
 
 const whatsappUrl = "https://wa.me/393883739941";
 
@@ -70,10 +70,8 @@ export function HeroRecord() {
     <section
       ref={root}
       data-chapter="Intro"
-      className="relative overflow-hidden rounded-2xl border border-white/10 bg-[radial-gradient(circle_at_top,rgba(38,41,82,0.34),rgba(12,16,19,0.82)_48%),linear-gradient(180deg,rgba(12,16,19,0.9),rgba(12,16,19,0.98))] px-4 py-8 sm:rounded-[2rem] sm:px-6 sm:py-10 md:px-10 lg:flex lg:min-h-[calc(100svh-110px)] lg:items-center lg:py-12"
+      className="relative overflow-hidden py-8 sm:py-10 lg:flex lg:min-h-[calc(100svh-110px)] lg:items-center lg:py-12"
     >
-      <Spotlight className="-left-10 -top-40 md:-left-32 md:-top-20" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_18%,rgba(205,121,72,0.14),transparent_26%)]" />
 
       <div className="relative grid w-full items-center gap-12 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
         <div className="hero-copy max-w-3xl">
@@ -103,7 +101,7 @@ export function HeroRecord() {
                 href={whatsappUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="accent-hover w-full rounded-full border border-accent bg-accent px-6 py-3 text-center text-sm font-medium uppercase tracking-[0.14em] text-[#140d09] shadow-[0_14px_40px_rgba(205,121,72,0.28)] sm:inline-flex sm:w-auto sm:items-center sm:justify-center"
+                className="accent-hover w-full rounded-full border border-accent bg-accent px-6 py-3 text-center text-sm font-medium uppercase tracking-[0.14em] text-[#140d09] shadow-[0_14px_40px_rgba(212,133,58,0.28)] sm:inline-flex sm:w-auto sm:items-center sm:justify-center"
               >
                 Contattaci su WhatsApp
               </a>
@@ -135,7 +133,7 @@ export function HeroRecord() {
           <div className="hero-vinyl absolute inset-[3%] z-0">
             <div className="vinyl-spin relative h-full w-full">
               <div className="sleeve-grooves absolute inset-0 rounded-full shadow-[0_30px_80px_rgba(0,0,0,0.6)]" />
-              <div className="absolute inset-[33%] flex flex-col items-center justify-center rounded-full bg-[radial-gradient(circle_at_35%_30%,#f3c9a6,#cd7948_45%,#7a3e1d)] text-center text-[#140d09]">
+              <div className="absolute inset-[33%] flex flex-col items-center justify-center rounded-full bg-[radial-gradient(circle_at_35%_30%,#f3c9a6,#d4853a_45%,#7a3e1d)] text-center text-[#140d09]">
                 <CubeMark className="h-[34%] w-auto drop-shadow-[0_2px_6px_rgba(0,0,0,0.35)]" />
                 <span className="mt-1 font-mono text-[clamp(6px,0.9vw,9px)] uppercase tracking-[0.2em]">Lato A · 33⅓</span>
               </div>
@@ -146,7 +144,7 @@ export function HeroRecord() {
           <div className="hero-sleeve absolute inset-0 z-10 overflow-hidden rounded-md border border-white/10 shadow-[0_40px_100px_rgba(0,0,0,0.65)]">
             <MeshGradient
               className="!absolute inset-0"
-              colors={["#0c1013", "#1d1b3a", "#cd7948", "#262952", "#f3c9a6"]}
+              colors={["#090d18", "#1d1b3a", "#d4853a", "#262952", "#f3c9a6"]}
               distortion={0.9}
               swirl={0.45}
               grainOverlay={0.4}
