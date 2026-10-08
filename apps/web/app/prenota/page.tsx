@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { BookingCalendar } from "@/components/booking-calendar";
+import { BookingCalendarFromQuery } from "@/components/booking-calendar-from-query";
 import { findBookingSelection } from "@/lib/booking";
 
 export const metadata: Metadata = {
@@ -15,14 +17,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function PrenotaPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ servizio?: string }>;
-}) {
-  const { servizio } = await searchParams;
-  const initial = findBookingSelection(servizio);
-
+export default function PrenotaPage() {
   return (
     <main className="pb-20 pt-5 md:pb-24 md:pt-10">
       <section data-chapter="Prenota" className="mb-10 md:mb-14">
@@ -51,7 +46,9 @@ export default async function PrenotaPage({
       </section>
 
       <section data-chapter="Calendario">
-        <BookingCalendar initial={initial} />
+        <Suspense fallback={<BookingCalendar initial={findBookingSelection(undefined)} />}>
+          <BookingCalendarFromQuery />
+        </Suspense>
       </section>
     </main>
   );
